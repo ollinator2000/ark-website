@@ -2,27 +2,32 @@
 
 {% block content %}
 <section class="card">
-  <h2>Tribe Übersicht</h2>
-  {% if db_error %}<p><strong>Datenbankfehler:</strong> {{ db_error }}</p>{% endif %}
-  <table>
-    <thead>
-      <tr>
-        <th>Tribe</th>
-        <th>Spieler</th>
-        <th>Zuletzt gesehen</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for row in rows %}
-      <tr>
-        <td>{{ row.tribe_name }}</td>
-        <td>{{ row.player_name }}</td>
-        <td>{{ row.last_seen_at }}</td>
-      </tr>
-      {% else %}
-      <tr><td colspan="3">Keine Daten gefunden.</td></tr>
-      {% endfor %}
-    </tbody>
-  </table>
+  <div class="section-head">
+    <h3>Tribe Übersicht</h3>
+    <p>Zuordnung Spieler zu Tribe auf Basis der letzten bekannten Events.</p>
+  </div>
+  {% if db_error %}<p class="error"><strong>Datenbankfehler:</strong> {{ db_error }}</p>{% endif %}
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Tribe</th>
+          <th>Spieler</th>
+          <th>Zuletzt gesehen</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in rows %}
+        <tr>
+          <td>{{ row.tribe_name }}</td>
+          <td>{{ row.player_name }}</td>
+          <td>{{ row.last_seen_at }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="3">Keine Daten gefunden.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 </section>
 {% endblock %}

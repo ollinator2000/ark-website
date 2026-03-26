@@ -1,13 +1,23 @@
 {% extends "base.html" %}
 
 {% block content %}
-<section class="card">
-  <h2>Übersicht</h2>
-  <p>Diese Seite liest ARK-Statistiken direkt aus SQLite und zeigt:</p>
-  <ul>
-    <li>Spieler mit Aktivität (Dino-Kills, Player-Kills, Tames)</li>
-    <li>Tribe-Zuordnungen</li>
-    <li>Leaderboards</li>
-  </ul>
+<section class="grid">
+  <article class="card feature">
+    <h3>Spieleraktivität</h3>
+    <p>Alle Survivor mit mindestens einem Dino-Kill, Player-Kill oder Tame.</p>
+    <a class="btn" href="/players">Zur Player-Liste</a>
+  </article>
+
+  <article class="card feature">
+    <h3>Tribe Mapping</h3>
+    <p>Transparente Zuordnung von Spielern zu ihren Tribes.</p>
+    <a class="btn" href="/tribes">Zur Tribe-Übersicht</a>
+  </article>
+
+  <article class="card feature">
+    <h3>Leaderboards</h3>
+    <p>Top-Werte für Dino-Kills, Player-Kills und Tames in einer Ansicht.</p>
+    <a class="btn" href="/leaderboards">Zu den Rankings</a>
+  </article>
 </section>
 {% endblock %}

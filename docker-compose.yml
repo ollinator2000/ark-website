@@ -10,19 +10,20 @@ services:
     volumes:
       - ${ARK_DB_SOURCE}:${ARK_DB_TARGET}:ro
     labels:
-    - "traefik.enable=true"
-    - "traefik.docker.network=web"
-    - "traefik.http.routers.ark-secure.rule=Host(`ark.van-der-velde.net`)"
-    - "traefik.http.routers.ark-secure.entrypoints=https"
-    - "traefik.http.routers.ark-secure.tls=true"
-    - "traefik.http.routers.ark-secure.service=ark"
-    - "traefik.http.services.ark.loadbalancer.server.port=8000"
-
+      - "traefik.enable=true"
+      - "traefik.docker.network=${TRAEFIK_NETWORK}"
+      - "traefik.http.routers.ark-secure.rule=Host(`${TRAEFIK_HOST}`)"
+      - "traefik.http.routers.ark-secure.entrypoints=https"
+      - "traefik.http.routers.ark-secure.tls=true"
+      - "traefik.http.routers.ark-secure.service=ark"
+      - "traefik.http.services.ark.loadbalancer.server.port=8000"
     networks:
       - web
       - backend
+
 networks:
   web:
     external: true
+    name: ${TRAEFIK_NETWORK}
   backend:
     external: false

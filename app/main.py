@@ -10,10 +10,18 @@ from fastapi.templating import Jinja2Templates
 
 DB_PATH = Path(os.getenv("ARK_DB_PATH", "/data/ark_stats.db"))
 APP_TITLE = "ARK Stats"
+SERVER_NAME = os.getenv("ARK_SERVER_NAME", "Pulpinesien - The Island")
+HERO_IMAGE_URL = os.getenv(
+    "ARK_HERO_IMAGE_URL",
+    "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2399830/header.jpg",
+)
 
 app = FastAPI(title=APP_TITLE)
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
+templates.env.globals["app_title"] = APP_TITLE
+templates.env.globals["server_name"] = SERVER_NAME
+templates.env.globals["hero_image_url"] = HERO_IMAGE_URL
 
 
 def get_conn() -> sqlite3.Connection:

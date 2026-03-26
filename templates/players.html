@@ -2,31 +2,36 @@
 
 {% block content %}
 <section class="card">
-  <h2>Spieler mit Aktivität</h2>
-  {% if db_error %}<p><strong>Datenbankfehler:</strong> {{ db_error }}</p>{% endif %}
-  <table>
-    <thead>
-      <tr>
-        <th>Spieler</th>
-        <th>Dino Kills</th>
-        <th>Player Kills</th>
-        <th>Dino Tames</th>
-        <th>Letztes Update</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for row in rows %}
-      <tr>
-        <td>{{ row.player_name }}</td>
-        <td>{{ row.dino_kills_total }}</td>
-        <td>{{ row.player_kills_total }}</td>
-        <td>{{ row.dino_tames_total }}</td>
-        <td>{{ row.updated_at }}</td>
-      </tr>
-      {% else %}
-      <tr><td colspan="5">Keine Daten gefunden.</td></tr>
-      {% endfor %}
-    </tbody>
-  </table>
+  <div class="section-head">
+    <h3>Spieler mit Aktivität</h3>
+    <p>Gelistet sind nur Spieler mit mindestens einem relevanten Event.</p>
+  </div>
+  {% if db_error %}<p class="error"><strong>Datenbankfehler:</strong> {{ db_error }}</p>{% endif %}
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Spieler</th>
+          <th>Dino Kills</th>
+          <th>Player Kills</th>
+          <th>Dino Tames</th>
+          <th>Letztes Update</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in rows %}
+        <tr>
+          <td>{{ row.player_name }}</td>
+          <td>{{ row.dino_kills_total }}</td>
+          <td>{{ row.player_kills_total }}</td>
+          <td>{{ row.dino_tames_total }}</td>
+          <td>{{ row.updated_at }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="5">Keine Daten gefunden.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 </section>
 {% endblock %}
