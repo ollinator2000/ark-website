@@ -129,6 +129,14 @@ nav a:hover {
   max-width: 55ch;
 }
 
+.grave-fun {
+  display: inline-block;
+  margin-top: 0.8rem;
+  color: #f5d1aa;
+  font-size: 0.92rem;
+  opacity: 0.92;
+}
+
 .badge {
   display: inline-block;
   margin: 0 0 0.6rem;
@@ -170,6 +178,10 @@ nav a:hover {
 
 .feature p {
   color: var(--muted);
+}
+
+.grave-card::before {
+  background: radial-gradient(circle, rgba(184, 198, 214, 0.28), rgba(184, 198, 214, 0));
 }
 
 .section-head {
@@ -234,6 +246,20 @@ tbody tr:hover {
 .error {
   margin-top: 0;
   color: #ffb0b0;
+}
+
+.rule-chip {
+  display: inline-block;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0.18rem 0.5rem;
+  background: rgba(22, 33, 45, 0.8);
+  font-size: 0.78rem;
+  color: #d7e4ed;
+}
+
+.deaths-grid {
+  grid-template-columns: 1fr;
 }
 
 @keyframes rise {

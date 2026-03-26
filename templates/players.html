@@ -4,7 +4,7 @@
 <section class="card">
   <div class="section-head">
     <h3>Spieler mit Aktivität</h3>
-    <p>Gelistet sind nur Spieler mit mindestens einem relevanten Event.</p>
+    <p>Gelistet sind Spieler mit Kills, Tames oder erfassten Toden.</p>
   </div>
   {% if db_error %}<p class="error"><strong>Datenbankfehler:</strong> {{ db_error }}</p>{% endif %}
   <div class="table-wrap">
@@ -15,6 +15,7 @@
           <th>Dino Kills</th>
           <th>Player Kills</th>
           <th>Dino Tames</th>
+          <th>Deaths 🪦</th>
           <th>Letztes Update</th>
         </tr>
       </thead>
@@ -25,10 +26,11 @@
           <td>{{ row.dino_kills_total }}</td>
           <td>{{ row.player_kills_total }}</td>
           <td>{{ row.dino_tames_total }}</td>
+          <td>{{ row.deaths_total }}</td>
           <td>{{ row.updated_at }}</td>
         </tr>
         {% else %}
-        <tr><td colspan="5">Keine Daten gefunden.</td></tr>
+        <tr><td colspan="6">Keine Daten gefunden.</td></tr>
         {% endfor %}
       </tbody>
     </table>

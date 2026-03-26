@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="section-head">
+  <h3>Deaths Log 🪦</h3>
+  <p>Alle erfassten Spielertode inklusive mutmaßlicher PvP-Tode.</p>
+</section>
+{% if db_error %}<p class="error"><strong>Datenbankfehler:</strong> {{ db_error }}</p>{% endif %}
+
+<div class="grid deaths-grid">
+  <section class="card">
+    <div class="section-head">
+      <h3>Most Deaths</h3>
+      <p>Summierte Tode je Spieler.</p>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Spieler</th>
+            <th>Tode</th>
+            <th>Likely PvP</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in leaderboard %}
+          <tr>
+            <td>{{ loop.index }}</td>
+            <td>{{ row.player_name }}</td>
+            <td>{{ row.deaths_total }}</td>
+            <td>{{ row.likely_pvp_deaths }}</td>
+          </tr>
+          {% else %}
+          <tr><td colspan="4">Noch keine Death-Events vorhanden.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="section-head">
+      <h3>Recent Death Events</h3>
+      <p>Letzte 200 Todesereignisse aus dem Log.</p>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Opfer</th>
+            <th>Verursacher</th>
+            <th>Zeit</th>
+            <th>Regel</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in recent_deaths %}
+          <tr>
+            <td>{{ row.victim_name }}</td>
+            <td>{{ row.killer_text }}</td>
+            <td>{{ row.event_time }}</td>
+            <td><span class="rule-chip">{{ row.source_rule }}</span></td>
+          </tr>
+          {% else %}
+          <tr><td colspan="4">Noch keine Death-Events vorhanden.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
+{% endblock %}

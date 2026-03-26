@@ -62,12 +62,20 @@ def players(request: Request):
            s.dino_kills_total,
            s.player_kills_total,
            s.dino_tames_total,
+           COALESCE(d.deaths_total, 0) AS deaths_total,
            s.updated_at
     FROM player_stats s
     JOIN players p ON p.id = s.player_id
+    LEFT JOIN (
+        SELECT victim_player_id, COUNT(*) AS deaths_total
+        FROM player_death_events
+        WHERE victim_player_id IS NOT NULL
+        GROUP BY victim_player_id
+    ) d ON d.victim_player_id = p.id
     WHERE s.dino_kills_total > 0
        OR s.player_kills_total > 0
        OR s.dino_tames_total > 0
+       OR COALESCE(d.deaths_total, 0) > 0
     ORDER BY p.player_name COLLATE NOCASE ASC
     """
     rows, db_error = fetch_all(query)
@@ -133,7 +141,18 @@ def leaderboards(request: Request):
         LIMIT 100
         """
     )
-    db_error = err1 or err2 or err3
+    most_deaths, err4 = fetch_all(
+        """
+        SELECT COALESCE(p.player_name, e.victim_name) AS player_name, COUNT(*) AS score
+        FROM player_death_events e
+        LEFT JOIN players p ON p.id = e.victim_player_id
+        GROUP BY COALESCE(p.player_name, e.victim_name)
+        HAVING COUNT(*) > 0
+        ORDER BY score DESC, player_name COLLATE NOCASE ASC
+        LIMIT 100
+        """
+    )
+    db_error = err1 or err2 or err3 or err4
 
     return templates.TemplateResponse(
         request=request,
@@ -143,6 +162,59 @@ def leaderboards(request: Request):
             "dino_kills": dino_kills,
             "player_kills": player_kills,
             "dino_tames": dino_tames,
+            "most_deaths": most_deaths,
+            "db_error": db_error,
+        },
+    )
+
+
+@app.get("/deaths", response_class=HTMLResponse)
+def deaths(request: Request):
+    leaderboard, err1 = fetch_all(
+        """
+        SELECT COALESCE(p.player_name, e.victim_name) AS player_name,
+               COUNT(*) AS deaths_total,
+               SUM(
+                   CASE
+                       WHEN e.killer_text IS NOT NULL
+                        AND TRIM(e.killer_text) <> ''
+                        AND LOWER(e.killer_text) NOT LIKE 'a %'
+                        AND LOWER(e.killer_text) NOT LIKE 'an %'
+                        AND LOWER(e.killer_text) NOT LIKE 'the %'
+                        AND INSTR(e.killer_text, '|') = 0
+                       THEN 1
+                       ELSE 0
+                   END
+               ) AS likely_pvp_deaths
+        FROM player_death_events e
+        LEFT JOIN players p ON p.id = e.victim_player_id
+        GROUP BY COALESCE(p.player_name, e.victim_name)
+        ORDER BY deaths_total DESC, player_name COLLATE NOCASE ASC
+        LIMIT 100
+        """
+    )
+
+    recent_deaths, err2 = fetch_all(
+        """
+        SELECT COALESCE(p.player_name, e.victim_name) AS victim_name,
+               COALESCE(NULLIF(TRIM(e.killer_text), ''), 'Unbekannt / Umwelt') AS killer_text,
+               COALESCE(e.event_time_text, e.recorded_at) AS event_time,
+               e.source_rule
+        FROM player_death_events e
+        LEFT JOIN players p ON p.id = e.victim_player_id
+        ORDER BY e.id DESC
+        LIMIT 200
+        """
+    )
+
+    db_error = err1 or err2
+    return templates.TemplateResponse(
+        request=request,
+        name="deaths.html",
+        context={
+            "title": f"{APP_TITLE} - Deaths",
+            "leaderboard": leaderboard,
+            "recent_deaths": recent_deaths,
             "db_error": db_error,
         },
     )
