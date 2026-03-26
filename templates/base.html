@@ -17,7 +17,12 @@
     <div class="wrap topbar-inner">
       <div>
         <p class="eyebrow">ARK: Survival Ascended</p>
-        <h1>{{ app_title }}</h1>
+        <div class="title-row">
+          <h1>{{ app_title }}</h1>
+          <span class="db-update">
+            {% if last_db_update %}Letztes DB-Update: {{ last_db_update }}{% else %}Letztes DB-Update: n/a{% endif %}
+          </span>
+        </div>
       </div>
       <nav>
         <a href="/">Home</a>

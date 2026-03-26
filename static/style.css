@@ -75,6 +75,19 @@ h1 {
   font-size: clamp(1.1rem, 1.8vw, 1.45rem);
 }
 
+.title-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+}
+
+.db-update {
+  color: var(--muted);
+  font-size: 0.78rem;
+  letter-spacing: 0.03em;
+}
+
 nav {
   display: flex;
   gap: 0.75rem;

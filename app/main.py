@@ -41,6 +41,33 @@ def fetch_all(query: str, params: tuple[Any, ...] = ()) -> tuple[list[dict], str
         return [], str(exc)
 
 
+def fetch_last_db_update() -> str | None:
+    query = """
+    SELECT MAX(ts) AS last_update
+    FROM (
+      SELECT MAX(updated_at) AS ts FROM player_stats
+      UNION ALL
+      SELECT MAX(last_seen_at) AS ts FROM players
+      UNION ALL
+      SELECT MAX(last_seen_at) AS ts FROM tribes
+      UNION ALL
+      SELECT MAX(last_seen_at) AS ts FROM player_tribe_membership
+      UNION ALL
+      SELECT MAX(recorded_at) AS ts FROM dino_tame_events
+      UNION ALL
+      SELECT MAX(recorded_at) AS ts FROM player_kill_events
+      UNION ALL
+      SELECT MAX(recorded_at) AS ts FROM player_death_events
+      UNION ALL
+      SELECT MAX(recorded_at) AS ts FROM dino_kill_events
+    )
+    """
+    rows, _ = fetch_all(query)
+    if not rows:
+        return None
+    return rows[0].get("last_update")
+
+
 @app.get("/healthz")
 def healthz() -> dict[str, str]:
     return {"status": "ok"}
@@ -51,7 +78,7 @@ def index(request: Request):
     return templates.TemplateResponse(
         request=request,
         name="index.html",
-        context={"title": APP_TITLE},
+        context={"title": APP_TITLE, "last_db_update": fetch_last_db_update()},
     )
 
 
@@ -83,7 +110,12 @@ def players(request: Request):
     return templates.TemplateResponse(
         request=request,
         name="players.html",
-        context={"title": f"{APP_TITLE} - Players", "rows": rows, "db_error": db_error},
+        context={
+            "title": f"{APP_TITLE} - Players",
+            "rows": rows,
+            "db_error": db_error,
+            "last_db_update": fetch_last_db_update(),
+        },
     )
 
 
@@ -105,7 +137,12 @@ def tribes(request: Request):
     return templates.TemplateResponse(
         request=request,
         name="tribes.html",
-        context={"title": f"{APP_TITLE} - Tribes", "rows": rows, "db_error": db_error},
+        context={
+            "title": f"{APP_TITLE} - Tribes",
+            "rows": rows,
+            "db_error": db_error,
+            "last_db_update": fetch_last_db_update(),
+        },
     )
 
 
@@ -164,6 +201,7 @@ def leaderboards(request: Request):
             "dino_tames": dino_tames,
             "most_deaths": most_deaths,
             "db_error": db_error,
+            "last_db_update": fetch_last_db_update(),
         },
     )
 
@@ -216,5 +254,6 @@ def deaths(request: Request):
             "leaderboard": leaderboard,
             "recent_deaths": recent_deaths,
             "db_error": db_error,
+            "last_db_update": fetch_last_db_update(),
         },
     )
