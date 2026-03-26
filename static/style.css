@@ -166,6 +166,9 @@ nav a:hover {
 .feature {
   position: relative;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 220px;
 }
 
 .feature::before {
@@ -178,6 +181,7 @@ nav a:hover {
 
 .feature p {
   color: var(--muted);
+  flex: 1;
 }
 
 .grave-card::before {
@@ -234,7 +238,7 @@ tbody tr:hover {
   position: relative;
   z-index: 1;
   display: inline-block;
-  margin-top: 0.35rem;
+  margin-top: auto;
   color: #16110c;
   text-decoration: none;
   background: linear-gradient(135deg, #ffcf94, #ff8a2a);
