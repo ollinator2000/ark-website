@@ -1,0 +1,24 @@
+services:
+  ark-website:
+    build: .
+    container_name: ark-website
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      - ARK_DB_PATH=${ARK_DB_TARGET}
+    volumes:
+      - ${ARK_DB_SOURCE}:${ARK_DB_TARGET}:ro
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.ark-website.rule=Host(`${TRAEFIK_HOST}`)
+      - traefik.http.routers.ark-website.entrypoints=websecure
+      - traefik.http.routers.ark-website.tls=true
+      - traefik.http.services.ark-website.loadbalancer.server.port=8000
+    networks:
+      - traefik
+
+networks:
+  traefik:
+    external: true
+    name: ${TRAEFIK_NETWORK}
