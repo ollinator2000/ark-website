@@ -17,6 +17,27 @@ Leichtgewichtige FastAPI-Website, die deine bestehende ARK SQLite-Datenbank (`ar
 - diese Website liest dieselbe DB read-only (`mode=ro`, `PRAGMA query_only=ON`)
 - Deployment als Container hinter bestehendem Traefik
 
+## Aktuelles SQLite-Schema
+
+Diese Website greift auf folgende Tabellen zu (Stand: aktuelles `ark-discord` Schema):
+
+- `players`: Stammdaten Spieler (`id`, `player_name`, `first_seen_at`, `last_seen_at`)
+- `tribes`: Stammdaten Tribes (`id`, `tribe_name`, `first_seen_at`, `last_seen_at`)
+- `player_tribe_membership`: Zuordnung Spieler <-> Tribe (`player_id`, `tribe_id`, `last_seen_at`)
+- `player_stats`: aggregierte Kernwerte je Spieler (`dino_kills_total`, `player_kills_total`, `dino_tames_total`)
+- `player_dino_kills_by_type`: Kills pro Dino-Typ je Spieler
+- `dino_tame_events`: Einzelereignisse zu Tames
+- `player_kill_events`: Einzelereignisse zu echten Player-Kills
+- `player_death_events`: **alle** Spielertode (auch ohne Player-Killer), inkl. `killer_text`, `source_rule`
+- `dino_kill_events`: Einzelereignisse zu Dino-Kills
+- `ingestion_offsets`: Reader-Offsets für inkrementellen Import
+
+Wichtig zur Interpretation:
+
+- `player_kill_events` = nur Kills, die als Player-Kill erkannt wurden
+- `player_death_events` = alle Tode (auch Umwelt/unklar/kein Killer)
+- deshalb können Death-Zahlen steigen, ohne dass `player_kills_total` steigt
+
 ## Wichtige Dateien
 
 - App: [main.py](/Users/olveld/wrk/ark-website/app/main.py)
