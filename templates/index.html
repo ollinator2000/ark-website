@@ -1,66 +1,40 @@
 {% extends "base.html" %}
 
 {% block content %}
+{% if db_error %}<p class="error"><strong>Datenbankfehler:</strong> {{ db_error }}</p>{% endif %}
+
 <section class="grid">
-  <article class="card feature">
-    <h3>Spieleraktivität</h3>
-    <p>Alle Survivor mit mindestens einem Dino-Kill, Player-Kill oder Tame.</p>
-    <a class="btn" href="/players">Zur Player-Liste</a>
+  <article class="card feature danger-card">
+    <h3>Gefährlichster Dino ☠️</h3>
+    {% if top_dino %}
+    <p><strong>{{ top_dino.dino_name }}</strong></p>
+    <p>{{ top_dino.score }} Player-Kills</p>
+    {% else %}
+    <p>Noch keine Dino-Kills gegen Spieler erfasst.</p>
+    {% endif %}
+    <a class="btn" href="/leaderboards">Zum Dino-Ranking</a>
   </article>
 
   <article class="card feature">
-    <h3>Tribe Mapping</h3>
-    <p>Transparente Zuordnung von Spielern zu ihren Tribes.</p>
-    <a class="btn" href="/tribes">Zur Tribe-Übersicht</a>
+    <h3>Meiste Dino-Kills</h3>
+    {% if top_player_dino_kills %}
+    <p><strong>{{ top_player_dino_kills.player_name }}</strong></p>
+    <p>{{ top_player_dino_kills.score }} Dino-Kills</p>
+    {% else %}
+    <p>Noch keine Dino-Kills erfasst.</p>
+    {% endif %}
+    <a class="btn" href="/leaderboards">Zum Player-Ranking</a>
   </article>
 
   <article class="card feature">
-    <h3>Leaderboards</h3>
-    <p>Top-Werte für Dino-Kills, Player-Kills und Tames in einer Ansicht.</p>
-    <a class="btn" href="/leaderboards">Zu den Rankings</a>
+    <h3>Meiste Tames</h3>
+    {% if top_player_tames %}
+    <p><strong>{{ top_player_tames.player_name }}</strong></p>
+    <p>{{ top_player_tames.score }} Tames</p>
+    {% else %}
+    <p>Noch keine Tames erfasst.</p>
+    {% endif %}
+    <a class="btn" href="/leaderboards">Zum Tame-Ranking</a>
   </article>
-
-  <article class="card feature grave-card">
-    <h3>Death Log 🪦</h3>
-    <p>Alle registrierten Spielertode inklusive Ursache und aktueller Death-Leader.</p>
-    <a class="btn" href="/deaths">Zur Death-Seite</a>
-  </article>
-</section>
-
-<section class="card danger-card">
-  <div class="section-head">
-    <h3>Gefährlichster Dino aktuell</h3>
-    <p>Ranking nach erfassten Player-Kills aus den Death-Events.</p>
-  </div>
-  {% if db_error %}<p class="error"><strong>Datenbankfehler:</strong> {{ db_error }}</p>{% endif %}
-
-  {% if top_dino %}
-  <p class="danger-top">☠️ <strong>{{ top_dino.dino_name }}</strong> mit <strong>{{ top_dino.score }}</strong> Player-Kills</p>
-  {% else %}
-  <p>Noch keine Dino-Kills gegen Spieler erfasst.</p>
-  {% endif %}
-
-  <div class="table-wrap">
-    <table>
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>Dino</th>
-          <th>Player Kills</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for row in dino_killers %}
-        <tr>
-          <td>{{ loop.index }}</td>
-          <td>{{ row.dino_name }}</td>
-          <td>{{ row.score }}</td>
-        </tr>
-        {% else %}
-        <tr><td colspan="3">Keine Daten gefunden.</td></tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
 </section>
 {% endblock %}

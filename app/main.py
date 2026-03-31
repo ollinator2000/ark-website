@@ -166,6 +166,30 @@ def healthz() -> dict[str, str]:
 def index(request: Request):
     dino_killers, dino_error = fetch_dino_killer_ranking(limit=10)
     top_dino = dino_killers[0] if dino_killers else None
+    top_dino_killer_players, err_player_dino = fetch_all(
+        """
+        SELECT p.player_name, s.dino_kills_total AS score
+        FROM player_stats s
+        JOIN players p ON p.id = s.player_id
+        WHERE s.dino_kills_total > 0
+        ORDER BY s.dino_kills_total DESC, p.player_name COLLATE NOCASE ASC
+        LIMIT 1
+        """
+    )
+    top_tamers, err_tamer = fetch_all(
+        """
+        SELECT p.player_name, s.dino_tames_total AS score
+        FROM player_stats s
+        JOIN players p ON p.id = s.player_id
+        WHERE s.dino_tames_total > 0
+        ORDER BY s.dino_tames_total DESC, p.player_name COLLATE NOCASE ASC
+        LIMIT 1
+        """
+    )
+    top_player_dino_kills = top_dino_killer_players[0] if top_dino_killer_players else None
+    top_player_tames = top_tamers[0] if top_tamers else None
+    db_error = dino_error or err_player_dino or err_tamer
+
     return templates.TemplateResponse(
         request=request,
         name="index.html",
@@ -173,8 +197,9 @@ def index(request: Request):
             "title": APP_TITLE,
             "last_db_update": fetch_last_db_update(),
             "top_dino": top_dino,
-            "dino_killers": dino_killers,
-            "db_error": dino_error,
+            "top_player_dino_kills": top_player_dino_kills,
+            "top_player_tames": top_player_tames,
+            "db_error": db_error,
         },
     )
 
