@@ -212,11 +212,38 @@ def players(request: Request):
            s.player_kills_total,
            s.dino_tames_total,
            COALESCE(d.deaths_total, 0) AS deaths_total,
+           COALESCE(d.deaths_by_human, 0) AS deaths_by_human,
+           COALESCE(d.deaths_by_dino, 0) AS deaths_by_dino,
            s.updated_at
     FROM player_stats s
     JOIN players p ON p.id = s.player_id
     LEFT JOIN (
-        SELECT victim_player_id, COUNT(*) AS deaths_total
+        SELECT victim_player_id,
+               COUNT(*) AS deaths_total,
+               SUM(
+                 CASE
+                   WHEN killer_text IS NOT NULL
+                    AND TRIM(killer_text) <> ''
+                    AND NOT (
+                      LOWER(TRIM(killer_text)) LIKE 'a %'
+                      OR LOWER(TRIM(killer_text)) LIKE 'an %'
+                      OR LOWER(TRIM(killer_text)) LIKE 'the %'
+                      OR INSTR(TRIM(killer_text), ' - Lvl ') > 0
+                    )
+                 THEN 1 ELSE 0 END
+               ) AS deaths_by_human,
+               SUM(
+                 CASE
+                   WHEN killer_text IS NOT NULL
+                    AND TRIM(killer_text) <> ''
+                    AND (
+                      LOWER(TRIM(killer_text)) LIKE 'a %'
+                      OR LOWER(TRIM(killer_text)) LIKE 'an %'
+                      OR LOWER(TRIM(killer_text)) LIKE 'the %'
+                      OR INSTR(TRIM(killer_text), ' - Lvl ') > 0
+                    )
+                 THEN 1 ELSE 0 END
+               ) AS deaths_by_dino
         FROM player_death_events
         WHERE victim_player_id IS NOT NULL
         GROUP BY victim_player_id
@@ -282,17 +309,7 @@ def leaderboards(request: Request):
         LIMIT 100
         """
     )
-    player_kills, err2 = fetch_all(
-        """
-        SELECT p.player_name, s.player_kills_total AS score
-        FROM player_stats s
-        JOIN players p ON p.id = s.player_id
-        WHERE s.player_kills_total > 0
-        ORDER BY s.player_kills_total DESC, p.player_name COLLATE NOCASE ASC
-        LIMIT 100
-        """
-    )
-    dino_tames, err3 = fetch_all(
+    dino_tames, err2 = fetch_all(
         """
         SELECT p.player_name, s.dino_tames_total AS score
         FROM player_stats s
@@ -302,7 +319,7 @@ def leaderboards(request: Request):
         LIMIT 100
         """
     )
-    most_deaths, err4 = fetch_all(
+    most_deaths, err3 = fetch_all(
         """
         SELECT COALESCE(p.player_name, e.victim_name) AS player_name, COUNT(*) AS score
         FROM player_death_events e
@@ -310,6 +327,17 @@ def leaderboards(request: Request):
         GROUP BY COALESCE(p.player_name, e.victim_name)
         HAVING COUNT(*) > 0
         ORDER BY score DESC, player_name COLLATE NOCASE ASC
+        LIMIT 100
+        """
+    )
+    human_player_kills, err4 = fetch_all(
+        """
+        SELECT p.player_name, COUNT(*) AS score
+        FROM player_kill_events e
+        JOIN players p ON p.id = e.killer_player_id
+        GROUP BY p.player_name
+        HAVING COUNT(*) > 0
+        ORDER BY score DESC, p.player_name COLLATE NOCASE ASC
         LIMIT 100
         """
     )
@@ -322,7 +350,7 @@ def leaderboards(request: Request):
         context={
             "title": f"{APP_TITLE} - Leaderboards",
             "dino_kills": dino_kills,
-            "player_kills": player_kills,
+            "human_player_kills": human_player_kills,
             "dino_tames": dino_tames,
             "most_deaths": most_deaths,
             "dino_player_kills": dino_player_kills,
@@ -342,14 +370,30 @@ def deaths(request: Request):
                    CASE
                        WHEN e.killer_text IS NOT NULL
                         AND TRIM(e.killer_text) <> ''
-                        AND LOWER(e.killer_text) NOT LIKE 'a %'
-                        AND LOWER(e.killer_text) NOT LIKE 'an %'
-                        AND LOWER(e.killer_text) NOT LIKE 'the %'
-                        AND INSTR(e.killer_text, '|') = 0
+                        AND NOT (
+                          LOWER(TRIM(e.killer_text)) LIKE 'a %'
+                          OR LOWER(TRIM(e.killer_text)) LIKE 'an %'
+                          OR LOWER(TRIM(e.killer_text)) LIKE 'the %'
+                          OR INSTR(TRIM(e.killer_text), ' - Lvl ') > 0
+                        )
                        THEN 1
                        ELSE 0
                    END
-               ) AS likely_pvp_deaths
+               ) AS deaths_by_human,
+               SUM(
+                   CASE
+                       WHEN e.killer_text IS NOT NULL
+                        AND TRIM(e.killer_text) <> ''
+                        AND (
+                          LOWER(TRIM(e.killer_text)) LIKE 'a %'
+                          OR LOWER(TRIM(e.killer_text)) LIKE 'an %'
+                          OR LOWER(TRIM(e.killer_text)) LIKE 'the %'
+                          OR INSTR(TRIM(e.killer_text), ' - Lvl ') > 0
+                        )
+                       THEN 1
+                       ELSE 0
+                   END
+               ) AS deaths_by_dino
         FROM player_death_events e
         LEFT JOIN players p ON p.id = e.victim_player_id
         GROUP BY COALESCE(p.player_name, e.victim_name)
@@ -363,6 +407,15 @@ def deaths(request: Request):
         SELECT COALESCE(p.player_name, e.victim_name) AS victim_name,
                COALESCE(NULLIF(TRIM(e.killer_text), ''), 'Unbekannt / Umwelt') AS killer_text,
                COALESCE(e.event_time_text, e.recorded_at) AS event_time,
+               CASE
+                   WHEN e.killer_text IS NULL OR TRIM(e.killer_text) = '' THEN 'unknown'
+                   WHEN LOWER(TRIM(e.killer_text)) LIKE 'a %'
+                     OR LOWER(TRIM(e.killer_text)) LIKE 'an %'
+                     OR LOWER(TRIM(e.killer_text)) LIKE 'the %'
+                     OR INSTR(TRIM(e.killer_text), ' - Lvl ') > 0
+                     THEN 'dino'
+                   ELSE 'human'
+               END AS killer_type,
                e.source_rule
         FROM player_death_events e
         LEFT JOIN players p ON p.id = e.victim_player_id

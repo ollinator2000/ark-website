@@ -3,7 +3,7 @@
 {% block content %}
 <section class="section-head">
   <h3>Deaths Log 🪦</h3>
-  <p>Alle erfassten Spielertode inklusive mutmaßlicher PvP-Tode.</p>
+  <p>Alle erfassten Spielertode, getrennt nach Human- und Dino-Verursachern.</p>
 </section>
 {% if db_error %}<p class="error"><strong>Datenbankfehler:</strong> {{ db_error }}</p>{% endif %}
 
@@ -19,8 +19,9 @@
           <tr>
             <th>#</th>
             <th>Spieler</th>
-            <th>Tode</th>
-            <th>Likely PvP</th>
+            <th>Tode Total</th>
+            <th>Deaths by Human</th>
+            <th>Deaths by Dino</th>
           </tr>
         </thead>
         <tbody>
@@ -29,10 +30,11 @@
             <td>{{ loop.index }}</td>
             <td>{{ row.player_name }}</td>
             <td>{{ row.deaths_total }}</td>
-            <td>{{ row.likely_pvp_deaths }}</td>
+            <td>{{ row.deaths_by_human }}</td>
+            <td>{{ row.deaths_by_dino }}</td>
           </tr>
           {% else %}
-          <tr><td colspan="4">Noch keine Death-Events vorhanden.</td></tr>
+          <tr><td colspan="5">Noch keine Death-Events vorhanden.</td></tr>
           {% endfor %}
         </tbody>
       </table>
@@ -50,6 +52,7 @@
           <tr>
             <th>Opfer</th>
             <th>Verursacher</th>
+            <th>Killer Type</th>
             <th>Zeit</th>
             <th>Regel</th>
           </tr>
@@ -59,11 +62,12 @@
           <tr>
             <td>{{ row.victim_name }}</td>
             <td>{{ row.killer_text }}</td>
+            <td><span class="rule-chip">{{ row.killer_type }}</span></td>
             <td>{{ row.event_time }}</td>
             <td><span class="rule-chip">{{ row.source_rule }}</span></td>
           </tr>
           {% else %}
-          <tr><td colspan="4">Noch keine Death-Events vorhanden.</td></tr>
+          <tr><td colspan="5">Noch keine Death-Events vorhanden.</td></tr>
           {% endfor %}
         </tbody>
       </table>

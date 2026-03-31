@@ -6,11 +6,11 @@ Leichtgewichtige FastAPI-Website, die deine bestehende ARK SQLite-Datenbank (`ar
 
 - `/players`: Spieler mit mindestens einem Dino-Kill, Player-Kill oder Tame
 - `/tribes`: Spieler-zu-Tribe Übersicht
-- `/leaderboards`: Top Dino-Kills, Player-Kills, Dino-Tames, Deaths und Dino-Player-Kills
+- `/leaderboards`: getrennte Rankings für Human-Player-Kills, Dino-Player-Kills, Dino-Kills, Tames, Deaths
 - `/deaths`: Death-Log mit Most-Deaths und letzten Todesereignissen
 - `/healthz`: Healthcheck
 - ARK-Theme mit konfigurierbarem Servernamen und Hero-Bild
-- Startseite zeigt den aktuell gefährlichsten Dino (nach Player-Kills)
+- Startseite zeigt den aktuell gefährlichsten Dino sowie Top-Player für Dino-Kills und Tames
 
 ## Architektur
 

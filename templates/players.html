@@ -13,9 +13,11 @@
         <tr>
           <th>Spieler</th>
           <th>Dino Kills</th>
-          <th>Player Kills</th>
+          <th>Human Player Kills</th>
           <th>Dino Tames</th>
-          <th>Deaths 🪦</th>
+          <th>Deaths (Total)</th>
+          <th>Deaths by Human</th>
+          <th>Deaths by Dino</th>
           <th>Letztes Update</th>
         </tr>
       </thead>
@@ -27,10 +29,12 @@
           <td>{{ row.player_kills_total }}</td>
           <td>{{ row.dino_tames_total }}</td>
           <td>{{ row.deaths_total }}</td>
+          <td>{{ row.deaths_by_human }}</td>
+          <td>{{ row.deaths_by_dino }}</td>
           <td>{{ row.updated_at }}</td>
         </tr>
         {% else %}
-        <tr><td colspan="6">Keine Daten gefunden.</td></tr>
+        <tr><td colspan="8">Keine Daten gefunden.</td></tr>
         {% endfor %}
       </tbody>
     </table>
