@@ -65,6 +65,7 @@ cp .env.example .env
 - `ARK_PORT`: App-Port im Container (Standard: `8000`)
 - `ARK_SERVER_NAME`: Anzeigename im Hero-Bereich
 - `ARK_HERO_IMAGE_URL`: Hero-Hintergrundbild (URL)
+- `ARK_DISPLAY_TIMEZONE`: Anzeige-Zeitzone für UI-Timestamps (Standard: `Europe/Berlin`)
 - `ARK_DB_SOURCE`: absoluter Host-Pfad zur SQLite-Datei
 - `ARK_DB_TARGET`: Zielpfad im Container (Standard: `/data/ark_stats.db`)
 - `TRAEFIK_HOST`: Domain/Subdomain für die Website
@@ -141,3 +142,4 @@ Dann öffnen: `http://127.0.0.1:8000/`
 ## Hinweis
 
 Die Seite lädt Google Fonts und das Hero-Bild per externer URL. Wenn dein Server ausgehende Verbindungen stark beschränkt, kann das Theme reduziert dargestellt werden.
+Timestamps werden in der UI in `ARK_DISPLAY_TIMEZONE` umgerechnet (inkl. Sommer-/Winterzeit bei `Europe/Berlin`).

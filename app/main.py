@@ -1,7 +1,9 @@
 import os
 import sqlite3
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
+from zoneinfo import ZoneInfo
 
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
@@ -15,6 +17,7 @@ HERO_IMAGE_URL = os.getenv(
     "ARK_HERO_IMAGE_URL",
     "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2399830/header.jpg",
 )
+DISPLAY_TIMEZONE = os.getenv("ARK_DISPLAY_TIMEZONE", "Europe/Berlin")
 
 app = FastAPI(title=APP_TITLE)
 app.mount("/static", StaticFiles(directory="static"), name="static")
@@ -22,6 +25,12 @@ templates = Jinja2Templates(directory="templates")
 templates.env.globals["app_title"] = APP_TITLE
 templates.env.globals["server_name"] = SERVER_NAME
 templates.env.globals["hero_image_url"] = HERO_IMAGE_URL
+templates.env.globals["display_timezone"] = DISPLAY_TIMEZONE
+
+try:
+    LOCAL_TZ = ZoneInfo(DISPLAY_TIMEZONE)
+except Exception:
+    LOCAL_TZ = ZoneInfo("UTC")
 
 
 def get_conn() -> sqlite3.Connection:
@@ -39,6 +48,44 @@ def fetch_all(query: str, params: tuple[Any, ...] = ()) -> tuple[list[dict], str
             return [dict(r) for r in conn.execute(query, params).fetchall()], None
     except sqlite3.Error as exc:
         return [], str(exc)
+
+
+def format_ts_local(value: Any) -> str | None:
+    if value is None:
+        return None
+    raw = str(value).strip()
+    if not raw:
+        return None
+
+    candidate = raw[:-1] + "+00:00" if raw.endswith("Z") else raw
+    dt: datetime | None = None
+
+    try:
+        dt = datetime.fromisoformat(candidate)
+    except ValueError:
+        for pattern in ("%Y-%m-%d %H:%M:%S", "%Y-%m-%d %H:%M:%S.%f"):
+            try:
+                dt = datetime.strptime(candidate, pattern)
+                break
+            except ValueError:
+                continue
+
+    if dt is None:
+        return raw
+
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=UTC)
+
+    local = dt.astimezone(LOCAL_TZ)
+    return local.strftime("%d.%m.%Y %H:%M:%S %Z")
+
+
+def format_rows_timestamps(rows: list[dict], keys: tuple[str, ...]) -> list[dict]:
+    for row in rows:
+        for key in keys:
+            if key in row:
+                row[key] = format_ts_local(row.get(key))
+    return rows
 
 
 def fetch_last_db_update() -> str | None:
@@ -65,7 +112,7 @@ def fetch_last_db_update() -> str | None:
     rows, _ = fetch_all(query)
     if not rows:
         return None
-    return rows[0].get("last_update")
+    return format_ts_local(rows[0].get("last_update"))
 
 
 @app.get("/healthz")
@@ -106,6 +153,7 @@ def players(request: Request):
     ORDER BY p.player_name COLLATE NOCASE ASC
     """
     rows, db_error = fetch_all(query)
+    rows = format_rows_timestamps(rows, ("updated_at",))
 
     return templates.TemplateResponse(
         request=request,
@@ -133,6 +181,7 @@ def tribes(request: Request):
     """
 
     rows, db_error = fetch_all(query)
+    rows = format_rows_timestamps(rows, ("last_seen_at",))
 
     return templates.TemplateResponse(
         request=request,
@@ -244,6 +293,7 @@ def deaths(request: Request):
         LIMIT 200
         """
     )
+    recent_deaths = format_rows_timestamps(recent_deaths, ("event_time",))
 
     db_error = err1 or err2
     return templates.TemplateResponse(

@@ -20,7 +20,7 @@
         <div class="title-row">
           <h1>{{ app_title }}</h1>
           <span class="db-update">
-            {% if last_db_update %}Letztes DB-Update: {{ last_db_update }}{% else %}Letztes DB-Update: n/a{% endif %}
+            {% if last_db_update %}Letztes DB-Update ({{ display_timezone }}): {{ last_db_update }}{% else %}Letztes DB-Update ({{ display_timezone }}): n/a{% endif %}
           </span>
         </div>
       </div>
