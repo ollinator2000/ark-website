@@ -26,4 +26,41 @@
     <a class="btn" href="/deaths">Zur Death-Seite</a>
   </article>
 </section>
+
+<section class="card danger-card">
+  <div class="section-head">
+    <h3>Gefährlichster Dino aktuell</h3>
+    <p>Ranking nach erfassten Player-Kills aus den Death-Events.</p>
+  </div>
+  {% if db_error %}<p class="error"><strong>Datenbankfehler:</strong> {{ db_error }}</p>{% endif %}
+
+  {% if top_dino %}
+  <p class="danger-top">☠️ <strong>{{ top_dino.dino_name }}</strong> mit <strong>{{ top_dino.score }}</strong> Player-Kills</p>
+  {% else %}
+  <p>Noch keine Dino-Kills gegen Spieler erfasst.</p>
+  {% endif %}
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Dino</th>
+          <th>Player Kills</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in dino_killers %}
+        <tr>
+          <td>{{ loop.index }}</td>
+          <td>{{ row.dino_name }}</td>
+          <td>{{ row.score }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="3">Keine Daten gefunden.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
 {% endblock %}

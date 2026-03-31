@@ -115,6 +115,48 @@ def fetch_last_db_update() -> str | None:
     return format_ts_local(rows[0].get("last_update"))
 
 
+def fetch_dino_killer_ranking(limit: int = 100) -> tuple[list[dict], str | None]:
+    query = """
+    WITH normalized AS (
+      SELECT
+        CASE
+          WHEN LOWER(TRIM(killer_text)) LIKE 'a %' THEN SUBSTR(TRIM(killer_text), 3)
+          WHEN LOWER(TRIM(killer_text)) LIKE 'an %' THEN SUBSTR(TRIM(killer_text), 4)
+          WHEN LOWER(TRIM(killer_text)) LIKE 'the %' THEN SUBSTR(TRIM(killer_text), 5)
+          ELSE TRIM(killer_text)
+        END AS killer_no_article
+      FROM player_death_events
+      WHERE source_rule = 'player_death_by'
+        AND killer_text IS NOT NULL
+        AND TRIM(killer_text) <> ''
+        AND (
+          LOWER(TRIM(killer_text)) LIKE 'a %'
+          OR LOWER(TRIM(killer_text)) LIKE 'an %'
+          OR LOWER(TRIM(killer_text)) LIKE 'the %'
+          OR INSTR(TRIM(killer_text), ' - Lvl ') > 0
+        )
+    ),
+    typed AS (
+      SELECT
+        TRIM(
+          CASE
+            WHEN INSTR(killer_no_article, ' - Lvl ') > 0
+              THEN SUBSTR(killer_no_article, 1, INSTR(killer_no_article, ' - Lvl ') - 1)
+            ELSE killer_no_article
+          END
+        ) AS dino_name
+      FROM normalized
+    )
+    SELECT dino_name AS player_name, dino_name, COUNT(*) AS score
+    FROM typed
+    WHERE dino_name <> ''
+    GROUP BY dino_name
+    ORDER BY score DESC, dino_name COLLATE NOCASE ASC
+    LIMIT ?
+    """
+    return fetch_all(query, (limit,))
+
+
 @app.get("/healthz")
 def healthz() -> dict[str, str]:
     return {"status": "ok"}
@@ -122,10 +164,18 @@ def healthz() -> dict[str, str]:
 
 @app.get("/", response_class=HTMLResponse)
 def index(request: Request):
+    dino_killers, dino_error = fetch_dino_killer_ranking(limit=10)
+    top_dino = dino_killers[0] if dino_killers else None
     return templates.TemplateResponse(
         request=request,
         name="index.html",
-        context={"title": APP_TITLE, "last_db_update": fetch_last_db_update()},
+        context={
+            "title": APP_TITLE,
+            "last_db_update": fetch_last_db_update(),
+            "top_dino": top_dino,
+            "dino_killers": dino_killers,
+            "db_error": dino_error,
+        },
     )
 
 
@@ -238,7 +288,8 @@ def leaderboards(request: Request):
         LIMIT 100
         """
     )
-    db_error = err1 or err2 or err3 or err4
+    dino_player_kills, err5 = fetch_dino_killer_ranking(limit=100)
+    db_error = err1 or err2 or err3 or err4 or err5
 
     return templates.TemplateResponse(
         request=request,
@@ -249,6 +300,7 @@ def leaderboards(request: Request):
             "player_kills": player_kills,
             "dino_tames": dino_tames,
             "most_deaths": most_deaths,
+            "dino_player_kills": dino_player_kills,
             "db_error": db_error,
             "last_db_update": fetch_last_db_update(),
         },
