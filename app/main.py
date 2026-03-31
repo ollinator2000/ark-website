@@ -32,6 +32,18 @@ try:
 except Exception:
     LOCAL_TZ = ZoneInfo("UTC")
 
+HUMAN_NAME_SQL = """
+TRIM({col}) <> ''
+AND LOWER(TRIM({col})) <> 'unknown'
+AND LOWER(TRIM({col})) <> 'world'
+AND INSTR(TRIM({col}), '(') = 0
+AND INSTR(TRIM({col}), ')') = 0
+AND LOWER(TRIM({col})) NOT LIKE 'a %'
+AND LOWER(TRIM({col})) NOT LIKE 'an %'
+AND LOWER(TRIM({col})) NOT LIKE 'the %'
+AND INSTR(TRIM({col}), ' - Lvl ') = 0
+"""
+
 
 def get_conn() -> sqlite3.Connection:
     # Open DB in read-only mode so web app never writes into bot database.
@@ -116,6 +128,7 @@ def fetch_last_db_update() -> str | None:
 
 
 def fetch_dino_killer_ranking(limit: int = 100) -> tuple[list[dict], str | None]:
+    human_cond = HUMAN_NAME_SQL.format(col="killer_text")
     query = """
     WITH normalized AS (
       SELECT
@@ -129,12 +142,7 @@ def fetch_dino_killer_ranking(limit: int = 100) -> tuple[list[dict], str | None]
       WHERE source_rule = 'player_death_by'
         AND killer_text IS NOT NULL
         AND TRIM(killer_text) <> ''
-        AND (
-          LOWER(TRIM(killer_text)) LIKE 'a %'
-          OR LOWER(TRIM(killer_text)) LIKE 'an %'
-          OR LOWER(TRIM(killer_text)) LIKE 'the %'
-          OR INSTR(TRIM(killer_text), ' - Lvl ') > 0
-        )
+        AND NOT ({human_cond})
     ),
     typed AS (
       SELECT
@@ -154,7 +162,7 @@ def fetch_dino_killer_ranking(limit: int = 100) -> tuple[list[dict], str | None]
     ORDER BY score DESC, dino_name COLLATE NOCASE ASC
     LIMIT ?
     """
-    return fetch_all(query, (limit,))
+    return fetch_all(query.format(human_cond=human_cond), (limit,))
 
 
 @app.get("/healthz")
@@ -164,6 +172,7 @@ def healthz() -> dict[str, str]:
 
 @app.get("/", response_class=HTMLResponse)
 def index(request: Request):
+    human_cond = HUMAN_NAME_SQL.format(col="p.player_name")
     dino_killers, dino_error = fetch_dino_killer_ranking(limit=10)
     top_dino = dino_killers[0] if dino_killers else None
     top_dino_killer_players, err_player_dino = fetch_all(
@@ -172,9 +181,10 @@ def index(request: Request):
         FROM player_stats s
         JOIN players p ON p.id = s.player_id
         WHERE s.dino_kills_total > 0
+          AND ({human_cond})
         ORDER BY s.dino_kills_total DESC, p.player_name COLLATE NOCASE ASC
         LIMIT 1
-        """
+        """.format(human_cond=human_cond)
     )
     top_tamers, err_tamer = fetch_all(
         """
@@ -182,9 +192,10 @@ def index(request: Request):
         FROM player_stats s
         JOIN players p ON p.id = s.player_id
         WHERE s.dino_tames_total > 0
+          AND ({human_cond})
         ORDER BY s.dino_tames_total DESC, p.player_name COLLATE NOCASE ASC
         LIMIT 1
-        """
+        """.format(human_cond=human_cond)
     )
     top_player_dino_kills = top_dino_killer_players[0] if top_dino_killer_players else None
     top_player_tames = top_tamers[0] if top_tamers else None
@@ -206,6 +217,8 @@ def index(request: Request):
 
 @app.get("/players", response_class=HTMLResponse)
 def players(request: Request):
+    human_cond = HUMAN_NAME_SQL.format(col="p.player_name")
+    death_killer_human = HUMAN_NAME_SQL.format(col="killer_text")
     query = """
     SELECT p.player_name,
            s.dino_kills_total,
@@ -224,36 +237,29 @@ def players(request: Request):
                  CASE
                    WHEN killer_text IS NOT NULL
                     AND TRIM(killer_text) <> ''
-                    AND NOT (
-                      LOWER(TRIM(killer_text)) LIKE 'a %'
-                      OR LOWER(TRIM(killer_text)) LIKE 'an %'
-                      OR LOWER(TRIM(killer_text)) LIKE 'the %'
-                      OR INSTR(TRIM(killer_text), ' - Lvl ') > 0
-                    )
+                    AND ({death_killer_human})
                  THEN 1 ELSE 0 END
                ) AS deaths_by_human,
                SUM(
                  CASE
                    WHEN killer_text IS NOT NULL
                     AND TRIM(killer_text) <> ''
-                    AND (
-                      LOWER(TRIM(killer_text)) LIKE 'a %'
-                      OR LOWER(TRIM(killer_text)) LIKE 'an %'
-                      OR LOWER(TRIM(killer_text)) LIKE 'the %'
-                      OR INSTR(TRIM(killer_text), ' - Lvl ') > 0
-                    )
+                    AND NOT ({death_killer_human})
                  THEN 1 ELSE 0 END
                ) AS deaths_by_dino
         FROM player_death_events
         WHERE victim_player_id IS NOT NULL
         GROUP BY victim_player_id
     ) d ON d.victim_player_id = p.id
-    WHERE s.dino_kills_total > 0
+    WHERE ({human_cond})
+      AND (
+          s.dino_kills_total > 0
        OR s.player_kills_total > 0
        OR s.dino_tames_total > 0
        OR COALESCE(d.deaths_total, 0) > 0
+      )
     ORDER BY p.player_name COLLATE NOCASE ASC
-    """
+    """.format(human_cond=human_cond, death_killer_human=death_killer_human)
     rows, db_error = fetch_all(query)
     rows = format_rows_timestamps(rows, ("updated_at",))
 
@@ -299,15 +305,17 @@ def tribes(request: Request):
 
 @app.get("/leaderboards", response_class=HTMLResponse)
 def leaderboards(request: Request):
+    human_cond = HUMAN_NAME_SQL.format(col="p.player_name")
     dino_kills, err1 = fetch_all(
         """
         SELECT p.player_name, s.dino_kills_total AS score
         FROM player_stats s
         JOIN players p ON p.id = s.player_id
         WHERE s.dino_kills_total > 0
+          AND ({human_cond})
         ORDER BY s.dino_kills_total DESC, p.player_name COLLATE NOCASE ASC
         LIMIT 100
-        """
+        """.format(human_cond=human_cond)
     )
     dino_tames, err2 = fetch_all(
         """
@@ -315,9 +323,10 @@ def leaderboards(request: Request):
         FROM player_stats s
         JOIN players p ON p.id = s.player_id
         WHERE s.dino_tames_total > 0
+          AND ({human_cond})
         ORDER BY s.dino_tames_total DESC, p.player_name COLLATE NOCASE ASC
         LIMIT 100
-        """
+        """.format(human_cond=human_cond)
     )
     most_deaths, err3 = fetch_all(
         """
@@ -335,11 +344,12 @@ def leaderboards(request: Request):
         SELECT p.player_name, COUNT(*) AS score
         FROM player_kill_events e
         JOIN players p ON p.id = e.killer_player_id
+        WHERE ({human_cond})
         GROUP BY p.player_name
         HAVING COUNT(*) > 0
         ORDER BY score DESC, p.player_name COLLATE NOCASE ASC
         LIMIT 100
-        """
+        """.format(human_cond=human_cond)
     )
     dino_player_kills, err5 = fetch_dino_killer_ranking(limit=100)
     db_error = err1 or err2 or err3 or err4 or err5
@@ -362,6 +372,7 @@ def leaderboards(request: Request):
 
 @app.get("/deaths", response_class=HTMLResponse)
 def deaths(request: Request):
+    death_killer_human = HUMAN_NAME_SQL.format(col="e.killer_text")
     leaderboard, err1 = fetch_all(
         """
         SELECT COALESCE(p.player_name, e.victim_name) AS player_name,
@@ -370,12 +381,7 @@ def deaths(request: Request):
                    CASE
                        WHEN e.killer_text IS NOT NULL
                         AND TRIM(e.killer_text) <> ''
-                        AND NOT (
-                          LOWER(TRIM(e.killer_text)) LIKE 'a %'
-                          OR LOWER(TRIM(e.killer_text)) LIKE 'an %'
-                          OR LOWER(TRIM(e.killer_text)) LIKE 'the %'
-                          OR INSTR(TRIM(e.killer_text), ' - Lvl ') > 0
-                        )
+                        AND ({death_killer_human})
                        THEN 1
                        ELSE 0
                    END
@@ -384,12 +390,7 @@ def deaths(request: Request):
                    CASE
                        WHEN e.killer_text IS NOT NULL
                         AND TRIM(e.killer_text) <> ''
-                        AND (
-                          LOWER(TRIM(e.killer_text)) LIKE 'a %'
-                          OR LOWER(TRIM(e.killer_text)) LIKE 'an %'
-                          OR LOWER(TRIM(e.killer_text)) LIKE 'the %'
-                          OR INSTR(TRIM(e.killer_text), ' - Lvl ') > 0
-                        )
+                        AND NOT ({death_killer_human})
                        THEN 1
                        ELSE 0
                    END
@@ -399,7 +400,7 @@ def deaths(request: Request):
         GROUP BY COALESCE(p.player_name, e.victim_name)
         ORDER BY deaths_total DESC, player_name COLLATE NOCASE ASC
         LIMIT 100
-        """
+        """.format(death_killer_human=death_killer_human)
     )
 
     recent_deaths, err2 = fetch_all(
@@ -409,19 +410,15 @@ def deaths(request: Request):
                COALESCE(e.event_time_text, e.recorded_at) AS event_time,
                CASE
                    WHEN e.killer_text IS NULL OR TRIM(e.killer_text) = '' THEN 'unknown'
-                   WHEN LOWER(TRIM(e.killer_text)) LIKE 'a %'
-                     OR LOWER(TRIM(e.killer_text)) LIKE 'an %'
-                     OR LOWER(TRIM(e.killer_text)) LIKE 'the %'
-                     OR INSTR(TRIM(e.killer_text), ' - Lvl ') > 0
-                     THEN 'dino'
-                   ELSE 'human'
+                   WHEN ({death_killer_human}) THEN 'human'
+                   ELSE 'dino'
                END AS killer_type,
                e.source_rule
         FROM player_death_events e
         LEFT JOIN players p ON p.id = e.victim_player_id
         ORDER BY e.id DESC
         LIMIT 200
-        """
+        """.format(death_killer_human=death_killer_human)
     )
     recent_deaths = format_rows_timestamps(recent_deaths, ("event_time",))
 
