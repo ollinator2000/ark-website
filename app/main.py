@@ -352,7 +352,19 @@ def leaderboards(request: Request):
         """.format(human_cond=human_cond)
     )
     dino_player_kills, err5 = fetch_dino_killer_ranking(limit=100)
-    db_error = err1 or err2 or err3 or err4 or err5
+    companion_dino_kills, err6 = fetch_all(
+        """
+        SELECT p.player_name, s.dino_kills_total AS score
+        FROM player_stats s
+        JOIN players p ON p.id = s.player_id
+        WHERE s.dino_kills_total > 0
+          AND INSTR(TRIM(p.player_name), '(') > 0
+          AND INSTR(TRIM(p.player_name), ')') > 0
+        ORDER BY s.dino_kills_total DESC, p.player_name COLLATE NOCASE ASC
+        LIMIT 100
+        """
+    )
+    db_error = err1 or err2 or err3 or err4 or err5 or err6
 
     return templates.TemplateResponse(
         request=request,
@@ -364,6 +376,7 @@ def leaderboards(request: Request):
             "dino_tames": dino_tames,
             "most_deaths": most_deaths,
             "dino_player_kills": dino_player_kills,
+            "companion_dino_kills": companion_dino_kills,
             "db_error": db_error,
             "last_db_update": fetch_last_db_update(),
         },
