@@ -3,17 +3,21 @@
 {% block content %}
 {% if db_error %}<p class="error"><strong>Datenbankfehler:</strong> {{ db_error }}</p>{% endif %}
 
-<section class="card feature mvp-spotlight oak-border">
-  <h3>Tages-MVP</h3>
-  {% if daily_mvp %}
-  <p><strong>{{ daily_mvp.player_name }}</strong></p>
-  <p>Score: {{ "%.1f"|format(daily_mvp.mvp_score) }}</p>
-  <p>Kills(Player): {{ daily_mvp.player_kills }} | Kills(Dino): {{ daily_mvp.dino_kills }} | Tames: {{ daily_mvp.dino_tames }} | Deaths: {{ daily_mvp.deaths }}</p>
-  <p class="muted">{{ daily_mvp.period_label }}</p>
-  {% else %}
-  <p>Für heute noch keine Events für den MVP-Score erfasst.</p>
-  {% endif %}
-  <a class="btn" href="/leaderboards">Zu den Leaderboards</a>
+<section class="mvp-wrap">
+  <article class="card feature mvp-spotlight oak-border">
+    <span class="oak-side oak-left" aria-hidden="true"></span>
+    <span class="oak-side oak-right" aria-hidden="true"></span>
+    <h3>Tages-MVP</h3>
+    {% if daily_mvp %}
+    <p><strong>{{ daily_mvp.player_name }}</strong></p>
+    <p>Score: {{ "%.1f"|format(daily_mvp.mvp_score) }}</p>
+    <p>Kills(Player): {{ daily_mvp.player_kills }} | Kills(Dino): {{ daily_mvp.dino_kills }} | Tames: {{ daily_mvp.dino_tames }} | Deaths: {{ daily_mvp.deaths }}</p>
+    <p class="muted">{{ daily_mvp.period_label }}</p>
+    {% else %}
+    <p>Für heute noch keine Events für den MVP-Score erfasst.</p>
+    {% endif %}
+    <a class="btn" href="/leaderboards">Zu den Leaderboards</a>
+  </article>
 </section>
 
 <section class="grid trio-grid">
