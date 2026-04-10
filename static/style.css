@@ -316,66 +316,11 @@ tbody tr:hover {
 }
 
 .oak-border {
-  position: relative;
   border: 1px solid rgba(222, 177, 92, 0.85);
-  padding: 1.45rem 2.2rem;
+  padding: 1.2rem 1.2rem;
   box-shadow:
-    0 0 0 1px rgba(122, 89, 21, 0.55) inset,
+    0 0 0 1px rgba(140, 107, 34, 0.6) inset,
     0 14px 35px rgba(1, 4, 7, 0.34);
-}
-
-.oak-border::before,
-.oak-border::after {
-  content: "❧  ❦  ❧  ❦  ❧";
-  position: absolute;
-  left: 0;
-  width: 100%;
-  text-align: center;
-  color: #e4be78;
-  font-size: 1.02rem;
-  letter-spacing: 0.1rem;
-  opacity: 0.95;
-  pointer-events: none;
-  text-shadow: 0 0 10px rgba(228, 190, 120, 0.22);
-}
-
-.oak-border::before {
-  top: 0.35rem;
-}
-
-.oak-border::after {
-  bottom: 0.35rem;
-}
-
-.oak-border .oak-side {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 22px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #e4be78;
-  opacity: 0.95;
-  pointer-events: none;
-  text-shadow: 0 0 10px rgba(228, 190, 120, 0.22);
-}
-
-.oak-border .oak-side::before {
-  content: "❧ ❦ ❧ ❦ ❧ ❦";
-  writing-mode: vertical-rl;
-  text-orientation: mixed;
-  letter-spacing: 0.14rem;
-  font-size: 0.95rem;
-}
-
-.oak-border .oak-left {
-  left: 0.25rem;
-}
-
-.oak-border .oak-right {
-  right: 0.25rem;
-  transform: scaleX(-1);
 }
 
 @keyframes rise {
