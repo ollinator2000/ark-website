@@ -293,6 +293,46 @@ tbody tr:hover {
   color: #ffd0b4;
 }
 
+.trio-grid {
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+.feature-large {
+  min-height: 253px;
+  padding: 1.15rem;
+}
+
+.mvp-spotlight {
+  margin-bottom: 1.1rem;
+}
+
+.oak-border {
+  position: relative;
+  border: 1px solid rgba(222, 177, 92, 0.85);
+  box-shadow:
+    0 0 0 1px rgba(122, 89, 21, 0.55) inset,
+    0 14px 35px rgba(1, 4, 7, 0.34);
+}
+
+.oak-border::before,
+.oak-border::after {
+  position: absolute;
+  top: 10px;
+  color: #e4be78;
+  font-size: 1.15rem;
+  opacity: 0.95;
+}
+
+.oak-border::before {
+  content: "❧";
+  left: 12px;
+}
+
+.oak-border::after {
+  content: "❦";
+  right: 12px;
+}
+
 @keyframes rise {
   from {
     opacity: 0;
