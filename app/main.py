@@ -1,6 +1,6 @@
 import os
 import sqlite3
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Any
 from zoneinfo import ZoneInfo
@@ -18,6 +18,10 @@ HERO_IMAGE_URL = os.getenv(
     "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2399830/header.jpg",
 )
 DISPLAY_TIMEZONE = os.getenv("ARK_DISPLAY_TIMEZONE", "Europe/Berlin")
+MVP_WEIGHT_DINO_KILL = float(os.getenv("ARK_MVP_WEIGHT_DINO_KILL", "1.0"))
+MVP_WEIGHT_PLAYER_KILL = float(os.getenv("ARK_MVP_WEIGHT_PLAYER_KILL", "3.0"))
+MVP_WEIGHT_DINO_TAME = float(os.getenv("ARK_MVP_WEIGHT_DINO_TAME", "2.0"))
+MVP_PENALTY_DEATH = float(os.getenv("ARK_MVP_PENALTY_DEATH", "1.5"))
 
 app = FastAPI(title=APP_TITLE)
 app.mount("/static", StaticFiles(directory="static"), name="static")
@@ -62,7 +66,7 @@ def fetch_all(query: str, params: tuple[Any, ...] = ()) -> tuple[list[dict], str
         return [], str(exc)
 
 
-def format_ts_local(value: Any) -> str | None:
+def format_ts_local(value: Any, include_weekday: bool = False) -> str | None:
     if value is None:
         return None
     raw = str(value).strip()
@@ -89,7 +93,21 @@ def format_ts_local(value: Any) -> str | None:
         dt = dt.replace(tzinfo=UTC)
 
     local = dt.astimezone(LOCAL_TZ)
-    return local.strftime("%d.%m.%Y %H:%M:%S %Z")
+    formatted = local.strftime("%d.%m.%Y %H:%M:%S %Z")
+    if not include_weekday:
+        return formatted
+
+    weekdays_de = [
+        "Montag",
+        "Dienstag",
+        "Mittwoch",
+        "Donnerstag",
+        "Freitag",
+        "Samstag",
+        "Sonntag",
+    ]
+    weekday = weekdays_de[local.weekday()]
+    return f"{weekday}, {formatted}"
 
 
 def format_rows_timestamps(rows: list[dict], keys: tuple[str, ...]) -> list[dict]:
@@ -124,7 +142,7 @@ def fetch_last_db_update() -> str | None:
     rows, _ = fetch_all(query)
     if not rows:
         return None
-    return format_ts_local(rows[0].get("last_update"))
+    return format_ts_local(rows[0].get("last_update"), include_weekday=True)
 
 
 def fetch_dino_killer_ranking(limit: int = 100) -> tuple[list[dict], str | None]:
@@ -165,6 +183,99 @@ def fetch_dino_killer_ranking(limit: int = 100) -> tuple[list[dict], str | None]
     return fetch_all(query.format(human_cond=human_cond), (limit,))
 
 
+def fetch_daily_mvp() -> tuple[dict | None, str | None]:
+    human_cond = HUMAN_NAME_SQL.format(col="p.player_name")
+    now_local = datetime.now(LOCAL_TZ)
+    start_local = now_local.replace(hour=0, minute=0, second=0, microsecond=0)
+    end_local = start_local + timedelta(days=1)
+    start_utc = start_local.astimezone(UTC).isoformat()
+    end_utc = end_local.astimezone(UTC).isoformat()
+
+    query = """
+    WITH daily_events AS (
+      SELECT killer_player_id AS player_id, COUNT(*) AS dino_kills, 0 AS player_kills, 0 AS dino_tames, 0 AS deaths
+      FROM dino_kill_events
+      WHERE recorded_at >= ? AND recorded_at < ?
+      GROUP BY killer_player_id
+
+      UNION ALL
+
+      SELECT killer_player_id AS player_id, 0 AS dino_kills, COUNT(*) AS player_kills, 0 AS dino_tames, 0 AS deaths
+      FROM player_kill_events
+      WHERE recorded_at >= ? AND recorded_at < ?
+      GROUP BY killer_player_id
+
+      UNION ALL
+
+      SELECT player_id, 0 AS dino_kills, 0 AS player_kills, COUNT(*) AS dino_tames, 0 AS deaths
+      FROM dino_tame_events
+      WHERE recorded_at >= ? AND recorded_at < ?
+      GROUP BY player_id
+
+      UNION ALL
+
+      SELECT victim_player_id AS player_id, 0 AS dino_kills, 0 AS player_kills, 0 AS dino_tames, COUNT(*) AS deaths
+      FROM player_death_events
+      WHERE victim_player_id IS NOT NULL
+        AND recorded_at >= ? AND recorded_at < ?
+      GROUP BY victim_player_id
+    )
+    SELECT p.player_name,
+           SUM(d.dino_kills) AS dino_kills,
+           SUM(d.player_kills) AS player_kills,
+           SUM(d.dino_tames) AS dino_tames,
+           SUM(d.deaths) AS deaths,
+           (
+             SUM(d.dino_kills) * {w_dino}
+             + SUM(d.player_kills) * {w_player}
+             + SUM(d.dino_tames) * {w_tame}
+             - SUM(d.deaths) * {w_death_penalty}
+           ) AS mvp_score
+    FROM daily_events d
+    JOIN players p ON p.id = d.player_id
+    WHERE ({human_cond})
+    GROUP BY p.id, p.player_name
+    HAVING (SUM(d.dino_kills) + SUM(d.player_kills) + SUM(d.dino_tames) + SUM(d.deaths)) > 0
+    ORDER BY mvp_score DESC, player_kills DESC, dino_kills DESC, dino_tames DESC, p.player_name COLLATE NOCASE ASC
+    LIMIT 1
+    """.format(
+        human_cond=human_cond,
+        w_dino=MVP_WEIGHT_DINO_KILL,
+        w_player=MVP_WEIGHT_PLAYER_KILL,
+        w_tame=MVP_WEIGHT_DINO_TAME,
+        w_death_penalty=MVP_PENALTY_DEATH,
+    )
+
+    rows, err = fetch_all(
+        query,
+        (
+            start_utc,
+            end_utc,
+            start_utc,
+            end_utc,
+            start_utc,
+            end_utc,
+            start_utc,
+            end_utc,
+        ),
+    )
+    if err:
+        return None, err
+    if not rows:
+        return None, None
+    weekdays_de = [
+        "Montag",
+        "Dienstag",
+        "Mittwoch",
+        "Donnerstag",
+        "Freitag",
+        "Samstag",
+        "Sonntag",
+    ]
+    rows[0]["period_label"] = f"{weekdays_de[start_local.weekday()]} ({start_local.strftime('%d.%m.%Y')})"
+    return rows[0], None
+
+
 @app.get("/healthz")
 def healthz() -> dict[str, str]:
     return {"status": "ok"}
@@ -175,6 +286,7 @@ def index(request: Request):
     human_cond = HUMAN_NAME_SQL.format(col="p.player_name")
     dino_killers, dino_error = fetch_dino_killer_ranking(limit=10)
     top_dino = dino_killers[0] if dino_killers else None
+    daily_mvp, mvp_error = fetch_daily_mvp()
     top_dino_killer_players, err_player_dino = fetch_all(
         """
         SELECT p.player_name, s.dino_kills_total AS score
@@ -199,7 +311,7 @@ def index(request: Request):
     )
     top_player_dino_kills = top_dino_killer_players[0] if top_dino_killer_players else None
     top_player_tames = top_tamers[0] if top_tamers else None
-    db_error = dino_error or err_player_dino or err_tamer
+    db_error = dino_error or err_player_dino or err_tamer or mvp_error
 
     return templates.TemplateResponse(
         request=request,
@@ -210,6 +322,7 @@ def index(request: Request):
             "top_dino": top_dino,
             "top_player_dino_kills": top_player_dino_kills,
             "top_player_tames": top_player_tames,
+            "daily_mvp": daily_mvp,
             "db_error": db_error,
         },
     )

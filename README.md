@@ -10,7 +10,7 @@ Leichtgewichtige FastAPI-Website, die deine bestehende ARK SQLite-Datenbank (`ar
 - `/deaths`: Death-Log mit Most-Deaths und letzten Todesereignissen
 - `/healthz`: Healthcheck
 - ARK-Theme mit konfigurierbarem Servernamen und Hero-Bild
-- Startseite zeigt den aktuell gefährlichsten Dino sowie Top-Player für Dino-Kills und Tames
+- Startseite zeigt den aktuell gefährlichsten Dino sowie Top-Player für Dino-Kills, Tames und Tages-MVP
 
 ## Architektur
 
@@ -67,6 +67,10 @@ cp .env.example .env
 - `ARK_SERVER_NAME`: Anzeigename im Hero-Bereich
 - `ARK_HERO_IMAGE_URL`: Hero-Hintergrundbild (URL)
 - `ARK_DISPLAY_TIMEZONE`: Anzeige-Zeitzone für UI-Timestamps (Standard: `Europe/Berlin`)
+- `ARK_MVP_WEIGHT_DINO_KILL`: Gewichtung für Dino-Kill im Tages-MVP-Score (Standard: `1.0`)
+- `ARK_MVP_WEIGHT_PLAYER_KILL`: Gewichtung für Player-Kill im Tages-MVP-Score (Standard: `3.0`)
+- `ARK_MVP_WEIGHT_DINO_TAME`: Gewichtung für Tame im Tages-MVP-Score (Standard: `2.0`)
+- `ARK_MVP_PENALTY_DEATH`: Abzug pro Tod im Tages-MVP-Score (Standard: `1.5`)
 - `ARK_DB_SOURCE`: absoluter Host-Pfad zur SQLite-Datei
 - `ARK_DB_TARGET`: Zielpfad im Container (Standard: `/data/ark_stats.db`)
 - `TRAEFIK_HOST`: Domain/Subdomain für die Website

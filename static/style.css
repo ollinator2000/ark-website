@@ -265,6 +265,10 @@ tbody tr:hover {
   color: #ffb0b0;
 }
 
+.muted {
+  color: var(--muted);
+}
+
 .rule-chip {
   display: inline-block;
   border: 1px solid var(--line);
