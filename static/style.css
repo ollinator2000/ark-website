@@ -170,7 +170,7 @@ nav a:hover {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: min(460px, 92vw);
+  width: min(391px, 92vw);
   aspect-ratio: 1 / 1;
   margin: 0 auto;
   border-color: rgba(217, 168, 106, 0.7);
