@@ -8,7 +8,7 @@
   <p>Die wichtigsten Werte auf einen Blick, damit man sofort sieht, wer dominiert.</p>
 </section>
 
-<section class="dashboard-grid">
+<section class="mvp-single">
   <article class="card mvp-card">
     <p class="label">Tages-MVP</p>
     {% if daily_mvp %}
@@ -21,7 +21,9 @@
     <p class="muted">Für heute wurden noch keine relevanten Events erfasst.</p>
     {% endif %}
   </article>
+</section>
 
+<section class="grid metrics-grid">
   <article class="card metric-card">
     <p class="label">Gefährlichster Dino</p>
     {% if top_dino %}
