@@ -1,17 +1,17 @@
 {% extends "base.html" %}
 
 {% block content %}
-<section class="section-head">
-  <h3>Deaths Log 🪦</h3>
-  <p>Alle erfassten Spielertode, getrennt nach Human- und Dino-Verursachern.</p>
+<section class="page-head">
+  <h3>Death-Analyse</h3>
+  <p>Übersicht und Events, getrennt nach Human- und Dino-Verursachern.</p>
 </section>
 {% if db_error %}<p class="error"><strong>Datenbankfehler:</strong> {{ db_error }}</p>{% endif %}
 
 <div class="grid deaths-grid">
   <section class="card">
-    <div class="section-head">
-      <h3>Most Deaths</h3>
-      <p>Summierte Tode je Spieler.</p>
+    <div class="card-head">
+      <h4>Most Deaths</h4>
+      <p class="muted">Summierte Tode je Spieler</p>
     </div>
     <div class="table-wrap">
       <table>
@@ -42,9 +42,9 @@
   </section>
 
   <section class="card">
-    <div class="section-head">
-      <h3>Recent Death Events</h3>
-      <p>Letzte 200 Todesereignisse aus dem Log.</p>
+    <div class="card-head">
+      <h4>Recent Death Events</h4>
+      <p class="muted">Letzte 200 Todesereignisse</p>
     </div>
     <div class="table-wrap">
       <table>

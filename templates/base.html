@@ -6,7 +6,7 @@
   <title>{{ title }}</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;800&family=Oxanium:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root { --hero-image-url: url('{{ hero_image_url }}'); }
   </style>
@@ -15,18 +15,22 @@
 <body>
   <header class="topbar">
     <div class="wrap topbar-inner">
-      <div>
+      <div class="brand-block">
         <p class="eyebrow">ARK: Survival Ascended</p>
-        <div class="title-row">
-          <h1>{{ app_title }}</h1>
-          <span class="db-update">
-            {% if last_db_update %}Letztes DB-Update ({{ display_timezone }}): {{ last_db_update }}{% else %}Letztes DB-Update ({{ display_timezone }}): n/a{% endif %}
-          </span>
-        </div>
+        <h1>{{ app_title }}</h1>
       </div>
+
+      <div class="status-pill">
+        {% if last_db_update %}
+        Letztes DB-Update ({{ display_timezone }}): {{ last_db_update }}
+        {% else %}
+        Letztes DB-Update ({{ display_timezone }}): n/a
+        {% endif %}
+      </div>
+
       <nav>
-        <a href="/">Home</a>
-        <a href="/players">Players</a>
+        <a href="/">Start</a>
+        <a href="/players">Spieler</a>
         <a href="/tribes">Tribes</a>
         <a href="/leaderboards">Leaderboards</a>
         <a href="/deaths">Deaths</a>
@@ -36,10 +40,9 @@
 
   <section class="hero">
     <div class="wrap hero-inner">
-      <p class="badge">Dedicated Server</p>
+      <p class="hero-kicker">Dedicated Server</p>
       <h2>{{ server_name }}</h2>
-      <p>Live Stat-Portal für Kills, Tames, Tribes und Leaderboards.</p>
-      <p class="grave-fun">🪦 Here lies your old K/D ratio.</p>
+      <p>Kompaktes Live-Stat-Portal für Kills, Tames, Tribes und Death-Analyse.</p>
     </div>
   </section>
 

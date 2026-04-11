@@ -3,52 +3,74 @@
 {% block content %}
 {% if db_error %}<p class="error"><strong>Datenbankfehler:</strong> {{ db_error }}</p>{% endif %}
 
-<section class="mvp-wrap">
-  <article class="card feature mvp-spotlight oak-border">
-    <h3>Tages-MVP</h3>
+<section class="page-head">
+  <h3>Heute im Blick</h3>
+  <p>Die wichtigsten Werte auf einen Blick, damit man sofort sieht, wer dominiert.</p>
+</section>
+
+<section class="dashboard-grid">
+  <article class="card mvp-card">
+    <p class="label">Tages-MVP</p>
     {% if daily_mvp %}
-    <p><strong>{{ daily_mvp.player_name }}</strong></p>
-    <p>Score: {{ "%.1f"|format(daily_mvp.mvp_score) }}</p>
-    <p>Kills(Player): {{ daily_mvp.player_kills }} | Kills(Dino): {{ daily_mvp.dino_kills }} | Tames: {{ daily_mvp.dino_tames }} | Deaths: {{ daily_mvp.deaths }}</p>
+    <h4>{{ daily_mvp.player_name }}</h4>
+    <p class="big-number">{{ "%.1f"|format(daily_mvp.mvp_score) }}</p>
     <p class="muted">{{ daily_mvp.period_label }}</p>
+    <p class="muted">Player-Kills {{ daily_mvp.player_kills }} · Dino-Kills {{ daily_mvp.dino_kills }} · Tames {{ daily_mvp.dino_tames }} · Deaths {{ daily_mvp.deaths }}</p>
     {% else %}
-    <p>Für heute noch keine Events für den MVP-Score erfasst.</p>
+    <h4>Noch kein MVP</h4>
+    <p class="muted">Für heute wurden noch keine relevanten Events erfasst.</p>
+    {% endif %}
+  </article>
+
+  <article class="card metric-card">
+    <p class="label">Gefährlichster Dino</p>
+    {% if top_dino %}
+    <h4>{{ top_dino.dino_name }}</h4>
+    <p class="big-number">{{ top_dino.score }}</p>
+    <p class="muted">Player-Kills</p>
+    {% else %}
+    <h4>Keine Daten</h4>
+    {% endif %}
+  </article>
+
+  <article class="card metric-card">
+    <p class="label">Top Dino-Killer</p>
+    {% if top_player_dino_kills %}
+    <h4>{{ top_player_dino_kills.player_name }}</h4>
+    <p class="big-number">{{ top_player_dino_kills.score }}</p>
+    <p class="muted">Dino-Kills</p>
+    {% else %}
+    <h4>Keine Daten</h4>
+    {% endif %}
+  </article>
+
+  <article class="card metric-card">
+    <p class="label">Top Tamer</p>
+    {% if top_player_tames %}
+    <h4>{{ top_player_tames.player_name }}</h4>
+    <p class="big-number">{{ top_player_tames.score }}</p>
+    <p class="muted">Tames</p>
+    {% else %}
+    <h4>Keine Daten</h4>
     {% endif %}
   </article>
 </section>
 
-<section class="grid trio-grid">
-  <article class="card feature feature-large danger-card">
-    <h3>Gefährlichster Dino ☠️</h3>
-    {% if top_dino %}
-    <p><strong>{{ top_dino.dino_name }}</strong></p>
-    <p>{{ top_dino.score }} Player-Kills</p>
-    {% else %}
-    <p>Noch keine Dino-Kills gegen Spieler erfasst.</p>
-    {% endif %}
-    <a class="btn" href="/leaderboards">Zum Dino-Ranking</a>
+<section class="grid quicklinks">
+  <article class="card">
+    <h4>Leaderboards</h4>
+    <p class="muted">Alle Rankings für Human- und Dino-Stats.</p>
+    <a class="btn" href="/leaderboards">Öffnen</a>
   </article>
-
-  <article class="card feature feature-large">
-    <h3>Meiste Dino-Kills</h3>
-    {% if top_player_dino_kills %}
-    <p><strong>{{ top_player_dino_kills.player_name }}</strong></p>
-    <p>{{ top_player_dino_kills.score }} Dino-Kills</p>
-    {% else %}
-    <p>Noch keine Dino-Kills erfasst.</p>
-    {% endif %}
-    <a class="btn" href="/leaderboards">Zum Player-Ranking</a>
+  <article class="card">
+    <h4>Spieler-Ansicht</h4>
+    <p class="muted">Kills, Tames und Death-Splits pro Spieler.</p>
+    <a class="btn" href="/players">Öffnen</a>
   </article>
-
-  <article class="card feature feature-large">
-    <h3>Meiste Tames</h3>
-    {% if top_player_tames %}
-    <p><strong>{{ top_player_tames.player_name }}</strong></p>
-    <p>{{ top_player_tames.score }} Tames</p>
-    {% else %}
-    <p>Noch keine Tames erfasst.</p>
-    {% endif %}
-    <a class="btn" href="/leaderboards">Zum Tame-Ranking</a>
+  <article class="card">
+    <h4>Death-Analyse</h4>
+    <p class="muted">Verursacher-Typen und jüngste Death-Events.</p>
+    <a class="btn" href="/deaths">Öffnen</a>
   </article>
 </section>
 {% endblock %}

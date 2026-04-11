@@ -1,8 +1,11 @@
 {% extends "base.html" %}
 
-{% macro board(title, rows) -%}
+{% macro board(title, rows, subtitle='') -%}
 <section class="card leaderboard-card">
-  <h3>{{ title }}</h3>
+  <div class="card-head">
+    <h4>{{ title }}</h4>
+    {% if subtitle %}<p class="muted">{{ subtitle }}</p>{% endif %}
+  </div>
   <div class="table-wrap">
     <table>
       <thead>
@@ -29,17 +32,18 @@
 {%- endmacro %}
 
 {% block content %}
-<section class="section-head">
+<section class="page-head">
   <h3>Leaderboards</h3>
-  <p>Human und Dino Kill-Statistiken sind getrennt dargestellt.</p>
+  <p>Klar getrennte Rankings für Human, Dino, Survival und Begleiter.</p>
 </section>
 {% if db_error %}<p class="error"><strong>Datenbankfehler:</strong> {{ db_error }}</p>{% endif %}
-<div class="grid">
-  {{ board("Meiste Dino Kills (Players)", dino_kills) }}
-  {{ board("Meiste Human Player Kills", human_player_kills) }}
+
+<div class="grid leaderboard-grid">
+  {{ board("Meiste Human Player Kills", human_player_kills, "Nur menschliche Spieler") }}
+  {{ board("Meiste Player-Kills durch Dinos", dino_player_kills, "Killer sind Dinos") }}
+  {{ board("Meiste Dino Kills (Players)", dino_kills, "Getötete Dinos durch Spieler") }}
   {{ board("Meiste Dino Tames", dino_tames) }}
-  {{ board("Meiste Deaths 🪦", most_deaths) }}
-  {{ board("Meiste Player-Kills durch Dinos ☠️", dino_player_kills) }}
-  {{ board("Gefährlichster Begleiter 🦖", companion_dino_kills) }}
+  {{ board("Meiste Deaths", most_deaths) }}
+  {{ board("Gefährlichster Begleiter", companion_dino_kills, "Getamte Dinos mit den meisten Kills") }}
 </div>
 {% endblock %}

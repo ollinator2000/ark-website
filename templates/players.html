@@ -1,11 +1,12 @@
 {% extends "base.html" %}
 
 {% block content %}
+<section class="page-head">
+  <h3>Spieler-Statistiken</h3>
+  <p>Alle Kernwerte pro menschlichem Spieler, inkl. Trennung nach Killer-Typen.</p>
+</section>
+
 <section class="card">
-  <div class="section-head">
-    <h3>Spieler mit Aktivität</h3>
-    <p>Gelistet sind Spieler mit Kills, Tames oder erfassten Toden.</p>
-  </div>
   {% if db_error %}<p class="error"><strong>Datenbankfehler:</strong> {{ db_error }}</p>{% endif %}
   <div class="table-wrap">
     <table>

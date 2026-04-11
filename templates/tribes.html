@@ -1,11 +1,12 @@
 {% extends "base.html" %}
 
 {% block content %}
+<section class="page-head">
+  <h3>Tribe-Zuordnung</h3>
+  <p>Aktuell bekannte Spieler-zu-Tribe Beziehungen aus den Events.</p>
+</section>
+
 <section class="card">
-  <div class="section-head">
-    <h3>Tribe Übersicht</h3>
-    <p>Zuordnung Spieler zu Tribe auf Basis der letzten bekannten Events.</p>
-  </div>
   {% if db_error %}<p class="error"><strong>Datenbankfehler:</strong> {{ db_error }}</p>{% endif %}
   <div class="table-wrap">
     <table>
