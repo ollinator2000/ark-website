@@ -167,6 +167,12 @@ nav a:hover {
 }
 
 .mvp-card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: min(460px, 92vw);
+  aspect-ratio: 1 / 1;
+  margin: 0 auto;
   border-color: rgba(217, 168, 106, 0.7);
   box-shadow:
     0 0 0 1px rgba(131, 97, 50, 0.48) inset,
@@ -174,7 +180,27 @@ nav a:hover {
 }
 
 .mvp-single {
+  display: flex;
+  justify-content: center;
   margin-bottom: 0.85rem;
+}
+
+.mvp-content {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 0.28rem;
+}
+
+.mvp-laurel {
+  margin: 0.05rem 0 -0.1rem;
+  color: var(--accent-strong);
+  font-size: 1.65rem;
+  line-height: 1;
+  text-shadow: 0 0 10px rgba(240, 196, 133, 0.18);
 }
 
 .metrics-grid {
@@ -284,6 +310,8 @@ tbody tr:hover {
 .mini-list {
   margin: 0.35rem 0 0;
   padding-left: 1.1rem;
+  display: inline-block;
+  text-align: left;
 }
 
 .mini-list li {

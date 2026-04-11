@@ -10,25 +10,28 @@
 
 <section class="mvp-single">
   <article class="card mvp-card">
-    <p class="label">Tages-MVP</p>
-    {% if daily_mvp %}
-    <h4>{{ daily_mvp.player_name }}</h4>
-    <p class="big-number">{{ "%.1f"|format(daily_mvp.mvp_score) }}</p>
-    <p class="muted">{{ daily_mvp.period_label }}</p>
-    <p class="muted">Player-Kills {{ daily_mvp.player_kills }} · Dino-Kills {{ daily_mvp.dino_kills }} · Tames {{ daily_mvp.dino_tames }} · Deaths {{ daily_mvp.deaths }}</p>
-    {% else %}
-    <h4>Noch kein MVP</h4>
-    {% if mvp_candidates %}
-    <p class="muted">Noch kein klarer Sieger. Aktuelle Top-Kandidaten:</p>
-    <ol class="mini-list">
-      {% for row in mvp_candidates %}
-      <li>{{ row.player_name }} <span>{{ "%.1f"|format(row.mvp_score) }}</span></li>
-      {% endfor %}
-    </ol>
-    {% else %}
-    <p class="muted">Für heute wurden noch keine relevanten Events erfasst.</p>
-    {% endif %}
-    {% endif %}
+    <div class="mvp-content">
+      <p class="label">Tages-MVP</p>
+      {% if daily_mvp %}
+      <p class="mvp-laurel">❦</p>
+      <h4>{{ daily_mvp.player_name }}</h4>
+      <p class="big-number">{{ "%.1f"|format(daily_mvp.mvp_score) }}</p>
+      <p class="muted">{{ daily_mvp.period_label }}</p>
+      <p class="muted">Player-Kills {{ daily_mvp.player_kills }} · Dino-Kills {{ daily_mvp.dino_kills }} · Tames {{ daily_mvp.dino_tames }} · Deaths {{ daily_mvp.deaths }}</p>
+      {% else %}
+      <h4>Noch kein MVP</h4>
+      {% if mvp_candidates %}
+      <p class="muted">Noch kein klarer Sieger. Aktuelle Top-Kandidaten:</p>
+      <ol class="mini-list">
+        {% for row in mvp_candidates %}
+        <li>{{ row.player_name }} <span>{{ "%.1f"|format(row.mvp_score) }}</span></li>
+        {% endfor %}
+      </ol>
+      {% else %}
+      <p class="muted">Für heute wurden noch keine relevanten Events erfasst.</p>
+      {% endif %}
+      {% endif %}
+    </div>
   </article>
 </section>
 
