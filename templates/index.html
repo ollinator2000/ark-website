@@ -18,7 +18,16 @@
     <p class="muted">Player-Kills {{ daily_mvp.player_kills }} · Dino-Kills {{ daily_mvp.dino_kills }} · Tames {{ daily_mvp.dino_tames }} · Deaths {{ daily_mvp.deaths }}</p>
     {% else %}
     <h4>Noch kein MVP</h4>
+    {% if mvp_candidates %}
+    <p class="muted">Noch kein klarer Sieger. Aktuelle Top-Kandidaten:</p>
+    <ol class="mini-list">
+      {% for row in mvp_candidates %}
+      <li>{{ row.player_name }} <span>{{ "%.1f"|format(row.mvp_score) }}</span></li>
+      {% endfor %}
+    </ol>
+    {% else %}
     <p class="muted">Für heute wurden noch keine relevanten Events erfasst.</p>
+    {% endif %}
     {% endif %}
   </article>
 </section>
@@ -33,6 +42,7 @@
     {% else %}
     <h4>Keine Daten</h4>
     {% endif %}
+    <a class="mini-link" href="/leaderboards">Details</a>
   </article>
 
   <article class="card metric-card">
@@ -44,6 +54,7 @@
     {% else %}
     <h4>Keine Daten</h4>
     {% endif %}
+    <a class="mini-link" href="/leaderboards">Details</a>
   </article>
 
   <article class="card metric-card">
@@ -55,6 +66,7 @@
     {% else %}
     <h4>Keine Daten</h4>
     {% endif %}
+    <a class="mini-link" href="/leaderboards">Details</a>
   </article>
 </section>
 

@@ -183,7 +183,7 @@ def fetch_dino_killer_ranking(limit: int = 100) -> tuple[list[dict], str | None]
     return fetch_all(query.format(human_cond=human_cond), (limit,))
 
 
-def fetch_daily_mvp() -> tuple[dict | None, str | None]:
+def fetch_daily_mvp_ranking(limit: int = 5) -> tuple[list[dict], str | None]:
     human_cond = HUMAN_NAME_SQL.format(col="p.player_name")
     now_local = datetime.now(LOCAL_TZ)
     start_local = now_local.replace(hour=0, minute=0, second=0, microsecond=0)
@@ -237,7 +237,7 @@ def fetch_daily_mvp() -> tuple[dict | None, str | None]:
     GROUP BY p.id, p.player_name
     HAVING (SUM(d.dino_kills) + SUM(d.player_kills) + SUM(d.dino_tames) + SUM(d.deaths)) > 0
     ORDER BY mvp_score DESC, player_kills DESC, dino_kills DESC, dino_tames DESC, p.player_name COLLATE NOCASE ASC
-    LIMIT 1
+    LIMIT ?
     """.format(
         human_cond=human_cond,
         w_dino=MVP_WEIGHT_DINO_KILL,
@@ -257,12 +257,13 @@ def fetch_daily_mvp() -> tuple[dict | None, str | None]:
             end_utc,
             start_utc,
             end_utc,
+            limit,
         ),
     )
     if err:
-        return None, err
+        return [], err
     if not rows:
-        return None, None
+        return [], None
     weekdays_de = [
         "Montag",
         "Dienstag",
@@ -272,8 +273,19 @@ def fetch_daily_mvp() -> tuple[dict | None, str | None]:
         "Samstag",
         "Sonntag",
     ]
-    rows[0]["period_label"] = f"{weekdays_de[start_local.weekday()]} ({start_local.strftime('%d.%m.%Y')})"
-    return rows[0], None
+    period_label = f"{weekdays_de[start_local.weekday()]} ({start_local.strftime('%d.%m.%Y')})"
+    for row in rows:
+        row["period_label"] = period_label
+    return rows, None
+
+
+def fetch_daily_mvp() -> tuple[dict | None, str | None]:
+    ranking, err = fetch_daily_mvp_ranking(limit=1)
+    if err:
+        return None, err
+    if not ranking:
+        return None, None
+    return ranking[0], None
 
 
 @app.get("/healthz")
@@ -287,6 +299,9 @@ def index(request: Request):
     dino_killers, dino_error = fetch_dino_killer_ranking(limit=10)
     top_dino = dino_killers[0] if dino_killers else None
     daily_mvp, mvp_error = fetch_daily_mvp()
+    mvp_candidates: list[dict] = []
+    if daily_mvp is None and mvp_error is None:
+        mvp_candidates, mvp_error = fetch_daily_mvp_ranking(limit=3)
     top_dino_killer_players, err_player_dino = fetch_all(
         """
         SELECT p.player_name, s.dino_kills_total AS score
@@ -323,6 +338,7 @@ def index(request: Request):
             "top_player_dino_kills": top_player_dino_kills,
             "top_player_tames": top_player_tames,
             "daily_mvp": daily_mvp,
+            "mvp_candidates": mvp_candidates,
             "db_error": db_error,
         },
     )
