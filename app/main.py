@@ -22,9 +22,10 @@ def resolve_local_image_path(value: str | None, fallback: str) -> str:
     lowered = candidate.lower()
     if lowered.startswith("http://") or lowered.startswith("https://"):
         return fallback
-    if candidate.startswith("/"):
-        return candidate
-    return f"/{candidate}"
+    normalized = candidate if candidate.startswith("/") else f"/{candidate}"
+    if not normalized.startswith("/static/"):
+        return fallback
+    return normalized
 
 
 HERO_IMAGE_URL = resolve_local_image_path(
