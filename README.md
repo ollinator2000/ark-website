@@ -65,7 +65,7 @@ cp .env.example .env
 - `ARK_HOST`: Bind-Adresse im Container (Standard: `0.0.0.0`)
 - `ARK_PORT`: App-Port im Container (Standard: `8000`)
 - `ARK_SERVER_NAME`: Anzeigename im Hero-Bereich
-- `ARK_HERO_IMAGE_URL`: Hero-Hintergrundbild als **lokaler** Pfad (z. B. `/static/images/ark-hero.svg`)
+- `ARK_HERO_IMAGE_URL`: Hero-Hintergrundbild als **lokaler** Pfad (z. B. `/static/images/ark-hero-asa.jpeg`)
 - `ARK_CARD_IMAGE_DINO_DANGER`: lokaler Bildpfad für die Kachel "Gefährlichster Dino"
 - `ARK_CARD_IMAGE_DINO_KILLER`: lokaler Bildpfad für die Kachel "Top Dino-Killer"
 - `ARK_CARD_IMAGE_TOP_TAMER`: lokaler Bildpfad für die Kachel "Top Tamer"

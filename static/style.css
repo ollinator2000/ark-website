@@ -16,13 +16,26 @@
 }
 
 body {
+  position: relative;
   margin: 0;
   color: var(--text);
   font-family: "Manrope", sans-serif;
   background:
-    linear-gradient(180deg, rgba(8, 12, 18, 0.62), rgba(8, 12, 18, 0.9)),
+    linear-gradient(180deg, rgba(8, 12, 18, 0.34), rgba(8, 12, 18, 0.84)),
     var(--hero-image-url) center top / cover fixed no-repeat,
     radial-gradient(circle at top right, #1d2f46 0%, var(--bg) 50%);
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  background:
+    radial-gradient(circle at 15% 22%, rgba(242, 162, 142, 0.2), transparent 46%),
+    radial-gradient(circle at 78% 17%, rgba(130, 188, 255, 0.19), transparent 42%),
+    linear-gradient(110deg, rgba(6, 12, 22, 0.2), rgba(6, 12, 22, 0.65));
 }
 
 .wrap {
@@ -112,7 +125,9 @@ nav a:hover {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(4, 8, 12, 0.25), rgba(4, 8, 12, 0.9));
+  background:
+    radial-gradient(circle at 50% 0%, rgba(240, 196, 133, 0.14), transparent 45%),
+    linear-gradient(180deg, rgba(4, 8, 12, 0.14), rgba(4, 8, 12, 0.86));
 }
 
 .hero-inner {

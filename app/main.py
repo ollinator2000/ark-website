@@ -33,7 +33,7 @@ def resolve_local_image_path(value: str | None, fallback: str) -> str:
 
 HERO_IMAGE_URL = resolve_local_image_path(
     os.getenv("ARK_HERO_IMAGE_URL"),
-    "/static/images/ark-hero.svg",
+    "/static/images/ark-hero-asa.jpeg",
 )
 CARD_IMAGE_DINO_DANGER = resolve_local_image_path(
     os.getenv("ARK_CARD_IMAGE_DINO_DANGER"),
