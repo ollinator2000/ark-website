@@ -13,9 +13,35 @@ from fastapi.templating import Jinja2Templates
 DB_PATH = Path(os.getenv("ARK_DB_PATH", "/data/ark_stats.db"))
 APP_TITLE = "ARK Stats"
 SERVER_NAME = os.getenv("ARK_SERVER_NAME", "Pulpinesien - The Island")
-HERO_IMAGE_URL = os.getenv(
-    "ARK_HERO_IMAGE_URL",
-    "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2399830/header.jpg",
+
+
+def resolve_local_image_path(value: str | None, fallback: str) -> str:
+    candidate = (value or "").strip()
+    if not candidate:
+        return fallback
+    lowered = candidate.lower()
+    if lowered.startswith("http://") or lowered.startswith("https://"):
+        return fallback
+    if candidate.startswith("/"):
+        return candidate
+    return f"/{candidate}"
+
+
+HERO_IMAGE_URL = resolve_local_image_path(
+    os.getenv("ARK_HERO_IMAGE_URL"),
+    "/static/images/ark-hero.svg",
+)
+CARD_IMAGE_DINO_DANGER = resolve_local_image_path(
+    os.getenv("ARK_CARD_IMAGE_DINO_DANGER"),
+    "/static/images/card-dino-danger.svg",
+)
+CARD_IMAGE_DINO_KILLER = resolve_local_image_path(
+    os.getenv("ARK_CARD_IMAGE_DINO_KILLER"),
+    "/static/images/card-dino-killer.svg",
+)
+CARD_IMAGE_TOP_TAMER = resolve_local_image_path(
+    os.getenv("ARK_CARD_IMAGE_TOP_TAMER"),
+    "/static/images/card-top-tamer.svg",
 )
 DISPLAY_TIMEZONE = os.getenv("ARK_DISPLAY_TIMEZONE", "Europe/Berlin")
 MVP_WEIGHT_DINO_KILL = float(os.getenv("ARK_MVP_WEIGHT_DINO_KILL", "1.0"))
@@ -29,6 +55,9 @@ templates = Jinja2Templates(directory="templates")
 templates.env.globals["app_title"] = APP_TITLE
 templates.env.globals["server_name"] = SERVER_NAME
 templates.env.globals["hero_image_url"] = HERO_IMAGE_URL
+templates.env.globals["card_image_dino_danger"] = CARD_IMAGE_DINO_DANGER
+templates.env.globals["card_image_dino_killer"] = CARD_IMAGE_DINO_KILLER
+templates.env.globals["card_image_top_tamer"] = CARD_IMAGE_TOP_TAMER
 templates.env.globals["display_timezone"] = DISPLAY_TIMEZONE
 
 try:

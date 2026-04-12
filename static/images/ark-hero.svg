@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 820" role="img" aria-label="ARK inspired landscape background">
+  <defs>
+    <linearGradient id="sky" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0%" stop-color="#1c3047"/>
+      <stop offset="55%" stop-color="#0e1b2b"/>
+      <stop offset="100%" stop-color="#080f16"/>
+    </linearGradient>
+    <radialGradient id="sun" cx="70%" cy="15%" r="35%">
+      <stop offset="0%" stop-color="#d9a86a" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#d9a86a" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="mountain" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#324964"/>
+      <stop offset="100%" stop-color="#182736"/>
+    </linearGradient>
+  </defs>
+  <rect width="1920" height="820" fill="url(#sky)"/>
+  <rect width="1920" height="820" fill="url(#sun)"/>
+
+  <polygon points="0,560 320,330 620,560" fill="url(#mountain)" opacity="0.9"/>
+  <polygon points="350,560 760,250 1190,560" fill="#233648" opacity="0.88"/>
+  <polygon points="980,560 1360,300 1760,560" fill="#1f3244" opacity="0.86"/>
+  <polygon points="1420,560 1680,380 1920,560" fill="#1c2d3d" opacity="0.85"/>
+
+  <ellipse cx="360" cy="710" rx="500" ry="180" fill="#0c1824"/>
+  <ellipse cx="1300" cy="720" rx="760" ry="210" fill="#0a1621"/>
+
+  <path d="M1200 580 L1260 470 L1320 580 Z" fill="#2c4158" opacity="0.9"/>
+  <rect x="1254" y="580" width="12" height="120" fill="#2c4158" opacity="0.9"/>
+
+  <g opacity="0.55" fill="#d9a86a">
+    <circle cx="170" cy="180" r="2"/>
+    <circle cx="310" cy="140" r="1.5"/>
+    <circle cx="510" cy="200" r="1.8"/>
+    <circle cx="760" cy="120" r="1.3"/>
+    <circle cx="980" cy="180" r="1.7"/>
+    <circle cx="1140" cy="130" r="1.4"/>
+    <circle cx="1450" cy="210" r="1.6"/>
+    <circle cx="1720" cy="170" r="1.9"/>
+  </g>
+</svg>

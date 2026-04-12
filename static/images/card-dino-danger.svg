@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" role="img" aria-label="Danger dino card background">
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#2a2230"/>
+      <stop offset="100%" stop-color="#101a25"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="20%" cy="25%" r="50%">
+      <stop offset="0%" stop-color="#d8775d" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#d8775d" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="800" fill="url(#bg)"/>
+  <rect width="1200" height="800" fill="url(#glow)"/>
+  <path d="M120 540 C260 430, 420 390, 580 430 C700 460, 790 430, 880 360 L860 435 L980 495 L845 520 L790 620 L740 540 C610 590, 520 620, 420 610 C310 600, 220 580, 120 540Z" fill="#2f3f52" opacity="0.75"/>
+  <circle cx="745" cy="510" r="10" fill="#d9a86a" opacity="0.8"/>
+  <path d="M0 700 L1200 560 L1200 800 L0 800 Z" fill="#0b151f" opacity="0.9"/>
+</svg>

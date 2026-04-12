@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" role="img" aria-label="Top dino killer card background">
+  <defs>
+    <linearGradient id="bg2" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#14273a"/>
+      <stop offset="100%" stop-color="#0b1622"/>
+    </linearGradient>
+    <radialGradient id="beam" cx="72%" cy="20%" r="48%">
+      <stop offset="0%" stop-color="#d9a86a" stop-opacity="0.75"/>
+      <stop offset="100%" stop-color="#d9a86a" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="800" fill="url(#bg2)"/>
+  <rect width="1200" height="800" fill="url(#beam)"/>
+  <path d="M140 640 L380 370 L460 460 L620 250 L760 420 L860 300 L1060 620 Z" fill="#2d4258" opacity="0.7"/>
+  <path d="M180 640 L320 520 L400 600 L540 450 L690 650 Z" fill="#3a516b" opacity="0.68"/>
+  <circle cx="618" cy="248" r="12" fill="#f0c485" opacity="0.95"/>
+  <path d="M0 710 L1200 620 L1200 800 L0 800 Z" fill="#09131c" opacity="0.9"/>
+</svg>

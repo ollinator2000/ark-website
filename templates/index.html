@@ -35,7 +35,7 @@
 </section>
 
 <section class="grid metrics-grid">
-  <article class="card metric-card">
+  <article class="card metric-card metric-dino-danger">
     <p class="label">Gefährlichster Dino</p>
     {% if top_dino %}
     <h4>{{ top_dino.dino_name }}</h4>
@@ -47,7 +47,7 @@
     <a class="mini-link" href="/leaderboards">Details</a>
   </article>
 
-  <article class="card metric-card">
+  <article class="card metric-card metric-dino-killer">
     <p class="label">Top Dino-Killer</p>
     {% if top_player_dino_kills %}
     <h4>{{ top_player_dino_kills.player_name }}</h4>
@@ -59,7 +59,7 @@
     <a class="mini-link" href="/leaderboards">Details</a>
   </article>
 
-  <article class="card metric-card">
+  <article class="card metric-card metric-top-tamer">
     <p class="label">Top Tamer</p>
     {% if top_player_tames %}
     <h4>{{ top_player_tames.player_name }}</h4>

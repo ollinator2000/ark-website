@@ -9,7 +9,7 @@ Leichtgewichtige FastAPI-Website, die deine bestehende ARK SQLite-Datenbank (`ar
 - `/leaderboards`: getrennte Rankings für Human-Player-Kills, Dino-Player-Kills, Dino-Kills, Tames, Deaths und gefährlichste Begleiter
 - `/deaths`: Death-Log mit Most-Deaths und letzten Todesereignissen
 - `/healthz`: Healthcheck
-- ARK-Theme mit konfigurierbarem Servernamen und Hero-Bild
+- ARK-Theme mit konfigurierbarem Servernamen und rein lokalen Bild-Assets
 - Startseite zeigt den aktuell gefährlichsten Dino sowie Top-Player für Dino-Kills, Tames und Tages-MVP
 
 ## Architektur
@@ -65,7 +65,10 @@ cp .env.example .env
 - `ARK_HOST`: Bind-Adresse im Container (Standard: `0.0.0.0`)
 - `ARK_PORT`: App-Port im Container (Standard: `8000`)
 - `ARK_SERVER_NAME`: Anzeigename im Hero-Bereich
-- `ARK_HERO_IMAGE_URL`: Hero-Hintergrundbild (URL)
+- `ARK_HERO_IMAGE_URL`: Hero-Hintergrundbild als **lokaler** Pfad (z. B. `/static/images/ark-hero.svg`)
+- `ARK_CARD_IMAGE_DINO_DANGER`: lokaler Bildpfad für die Kachel "Gefährlichster Dino"
+- `ARK_CARD_IMAGE_DINO_KILLER`: lokaler Bildpfad für die Kachel "Top Dino-Killer"
+- `ARK_CARD_IMAGE_TOP_TAMER`: lokaler Bildpfad für die Kachel "Top Tamer"
 - `ARK_DISPLAY_TIMEZONE`: Anzeige-Zeitzone für UI-Timestamps (Standard: `Europe/Berlin`)
 - `ARK_MVP_WEIGHT_DINO_KILL`: Gewichtung für Dino-Kill im Tages-MVP-Score (Standard: `1.0`)
 - `ARK_MVP_WEIGHT_PLAYER_KILL`: Gewichtung für Player-Kill im Tages-MVP-Score (Standard: `3.0`)
@@ -85,6 +88,12 @@ docker compose logs -f
 
 Aufruf:
 - `https://<TRAEFIK_HOST>/`
+
+## Bilder lokal ablegen
+
+- Standardmäßig liegen die verwendeten Bilder unter `/Users/olveld/wrk/ark-website/static/images`.
+- Eigene Motive einfach dort ablegen (z. B. `ark-hero.jpg`) und in `.env` auf `/static/images/ark-hero.jpg` setzen.
+- Externe `http(s)`-Bild-URLs werden in der App bewusst ignoriert und auf lokale Fallbacks zurückgesetzt.
 
 ## Traefik-Clientsettings dieser App
 
@@ -146,5 +155,5 @@ Dann öffnen: `http://127.0.0.1:8000/`
 
 ## Hinweis
 
-Die Seite lädt Google Fonts und das Hero-Bild per externer URL. Wenn dein Server ausgehende Verbindungen stark beschränkt, kann das Theme reduziert dargestellt werden.
+Die Seite lädt Google Fonts extern. Alle Hintergrundbilder werden lokal aus `static/images` ausgeliefert.
 Timestamps werden in der UI in `ARK_DISPLAY_TIMEZONE` umgerechnet (inkl. Sommer-/Winterzeit bei `Europe/Berlin`).

@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" role="img" aria-label="Top tamer card background">
+  <defs>
+    <linearGradient id="bg3" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#142d2a"/>
+      <stop offset="100%" stop-color="#0d1a1f"/>
+    </linearGradient>
+    <radialGradient id="mist" cx="30%" cy="30%" r="56%">
+      <stop offset="0%" stop-color="#7fc9a2" stop-opacity="0.4"/>
+      <stop offset="100%" stop-color="#7fc9a2" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="800" fill="url(#bg3)"/>
+  <rect width="1200" height="800" fill="url(#mist)"/>
+  <path d="M150 580 C210 470, 320 420, 450 430 C520 435, 600 470, 670 530 C730 470, 810 430, 900 430 C980 430, 1040 460, 1090 520 L1060 580 C990 550, 930 545, 860 560 C790 575, 730 610, 670 660 C600 610, 530 575, 450 560 C360 545, 270 550, 150 580Z" fill="#375a57" opacity="0.74"/>
+  <path d="M0 700 L1200 640 L1200 800 L0 800 Z" fill="#09171a" opacity="0.92"/>
+  <circle cx="670" cy="525" r="9" fill="#f0c485"/>
+</svg>

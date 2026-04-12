@@ -224,10 +224,72 @@ nav a:hover {
 }
 
 .metric-card {
+  position: relative;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   min-height: 220px;
+  isolation: isolate;
+}
+
+.metric-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  background-image: var(--metric-card-image);
+  background-size: cover;
+  background-position: center;
+  transform: scale(1.02);
+  opacity: 0.5;
+}
+
+.metric-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(160deg, rgba(5, 10, 17, 0.25), rgba(5, 10, 17, 0.92) 58%),
+    radial-gradient(circle at 20% 18%, rgba(240, 196, 133, 0.22), transparent 56%);
+}
+
+.metric-card h4,
+.metric-card .big-number,
+.metric-card .muted,
+.metric-card .label,
+.metric-card .mini-link {
+  position: relative;
+  z-index: 1;
+}
+
+.metric-card:hover::before {
+  opacity: 0.58;
+}
+
+.metric-dino-danger {
+  --metric-card-image: var(--card-image-dino-danger);
+}
+
+.metric-dino-danger::before {
+  background-position: 34% center;
+}
+
+.metric-dino-killer {
+  --metric-card-image: var(--card-image-dino-killer);
+}
+
+.metric-dino-killer::before {
+  background-position: center 28%;
+}
+
+.metric-top-tamer {
+  --metric-card-image: var(--card-image-top-tamer);
+}
+
+.metric-top-tamer::before {
+  background-position: center 72%;
 }
 
 .label {
