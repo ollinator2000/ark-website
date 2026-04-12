@@ -20,7 +20,7 @@ body {
   color: var(--text);
   font-family: "Manrope", sans-serif;
   background:
-    linear-gradient(180deg, rgba(8, 12, 18, 0.9), rgba(8, 12, 18, 0.99)),
+    linear-gradient(180deg, rgba(8, 12, 18, 0.62), rgba(8, 12, 18, 0.9)),
     var(--hero-image-url) center top / cover fixed no-repeat,
     radial-gradient(circle at top right, #1d2f46 0%, var(--bg) 50%);
 }

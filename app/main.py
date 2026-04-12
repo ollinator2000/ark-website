@@ -25,6 +25,9 @@ def resolve_local_image_path(value: str | None, fallback: str) -> str:
     normalized = candidate if candidate.startswith("/") else f"/{candidate}"
     if not normalized.startswith("/static/"):
         return fallback
+    static_file = Path("static") / normalized.removeprefix("/static/")
+    if not static_file.is_file():
+        return fallback
     return normalized
 
 
