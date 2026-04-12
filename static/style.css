@@ -167,6 +167,8 @@ nav a:hover {
 }
 
 .mvp-card {
+  position: relative;
+  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -177,6 +179,16 @@ nav a:hover {
   box-shadow:
     0 0 0 1px rgba(131, 97, 50, 0.48) inset,
     0 12px 30px rgba(2, 6, 11, 0.28);
+}
+
+.mvp-card::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 6px;
+  background: linear-gradient(180deg, #f0c485 0%, #c98732 100%);
 }
 
 .mvp-single {
@@ -195,12 +207,16 @@ nav a:hover {
   gap: 0.28rem;
 }
 
-.mvp-laurel {
-  margin: 0.05rem 0 -0.1rem;
-  color: var(--accent-strong);
-  font-size: 1.65rem;
-  line-height: 1;
-  text-shadow: 0 0 10px rgba(240, 196, 133, 0.18);
+.mvp-badge {
+  margin: 0 0 0.18rem;
+  padding: 0.22rem 0.62rem;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #f0c485, #d99850);
+  color: #1a1206;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 
 .metrics-grid {

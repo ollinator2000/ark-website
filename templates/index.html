@@ -11,9 +11,8 @@
 <section class="mvp-single">
   <article class="card mvp-card">
     <div class="mvp-content">
-      <p class="label">Tages-MVP</p>
+      <p class="mvp-badge">MVP des Tages</p>
       {% if daily_mvp %}
-      <p class="mvp-laurel">❦</p>
       <h4>{{ daily_mvp.player_name }}</h4>
       <p class="big-number">{{ "%.1f"|format(daily_mvp.mvp_score) }}</p>
       <p class="muted">{{ daily_mvp.period_label }}</p>
