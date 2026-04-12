@@ -1,14 +1,14 @@
 :root {
-  --bg: #0a0f15;
-  --bg-soft: #101826;
-  --surface: rgba(14, 22, 33, 0.84);
-  --surface-strong: rgba(10, 17, 27, 0.95);
-  --line: rgba(130, 156, 188, 0.26);
-  --text: #eaf1f7;
-  --muted: #a2b4c6;
-  --accent: #d9a86a;
-  --accent-strong: #f0c485;
-  --danger: #d8775d;
+  --bg: #07150f;
+  --bg-soft: #0d261d;
+  --surface: rgba(10, 26, 20, 0.78);
+  --surface-strong: rgba(8, 20, 16, 0.94);
+  --line: rgba(132, 180, 145, 0.32);
+  --text: #eef7ef;
+  --muted: #b5cdbf;
+  --accent: #c6974f;
+  --accent-strong: #efc57d;
+  --danger: #d9856d;
 }
 
 * {
@@ -19,11 +19,12 @@ body {
   position: relative;
   margin: 0;
   color: var(--text);
-  font-family: "Manrope", sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
+  letter-spacing: 0.01em;
   background:
-    linear-gradient(180deg, rgba(8, 12, 18, 0.34), rgba(8, 12, 18, 0.84)),
+    linear-gradient(180deg, rgba(6, 16, 12, 0.3), rgba(6, 16, 12, 0.86)),
     var(--hero-image-url) center top / cover fixed no-repeat,
-    radial-gradient(circle at top right, #1d2f46 0%, var(--bg) 50%);
+    radial-gradient(circle at top right, #255841 0%, var(--bg) 50%);
 }
 
 body::before {
@@ -33,9 +34,9 @@ body::before {
   pointer-events: none;
   z-index: -1;
   background:
-    radial-gradient(circle at 15% 22%, rgba(242, 162, 142, 0.2), transparent 46%),
-    radial-gradient(circle at 78% 17%, rgba(130, 188, 255, 0.19), transparent 42%),
-    linear-gradient(110deg, rgba(6, 12, 22, 0.2), rgba(6, 12, 22, 0.65));
+    radial-gradient(circle at 14% 20%, rgba(254, 181, 116, 0.18), transparent 42%),
+    radial-gradient(circle at 82% 16%, rgba(115, 214, 185, 0.16), transparent 44%),
+    linear-gradient(110deg, rgba(7, 18, 13, 0.2), rgba(7, 18, 13, 0.67));
 }
 
 .wrap {
@@ -48,7 +49,7 @@ body::before {
   top: 0;
   z-index: 20;
   backdrop-filter: blur(10px);
-  background: rgba(6, 10, 15, 0.82);
+  background: linear-gradient(180deg, rgba(5, 13, 10, 0.9), rgba(5, 13, 10, 0.8));
   border-bottom: 1px solid var(--line);
 }
 
@@ -65,8 +66,8 @@ body::before {
 h3,
 h4 {
   margin: 0;
-  font-family: "Cormorant Garamond", serif;
-  letter-spacing: 0.01em;
+  font-family: "Cinzel", serif;
+  letter-spacing: 0.02em;
 }
 
 .brand-block h1 {
@@ -89,7 +90,7 @@ h4 {
   color: var(--muted);
   font-size: 0.71rem;
   text-align: center;
-  background: rgba(21, 30, 43, 0.55);
+  background: rgba(14, 36, 27, 0.6);
 }
 
 nav {
@@ -103,15 +104,15 @@ nav a {
   text-decoration: none;
   color: var(--text);
   border: 1px solid var(--line);
-  border-radius: 10px;
+  border-radius: 999px;
   padding: 0.42rem 0.68rem;
   font-size: 0.84rem;
-  background: rgba(18, 27, 40, 0.72);
+  background: rgba(14, 34, 26, 0.75);
   transition: border-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
 }
 
 nav a:hover {
-  border-color: var(--accent);
+  border-color: rgba(239, 197, 125, 0.8);
   color: var(--accent-strong);
   transform: translateY(-1px);
 }
@@ -126,8 +127,8 @@ nav a:hover {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(circle at 50% 0%, rgba(240, 196, 133, 0.14), transparent 45%),
-    linear-gradient(180deg, rgba(4, 8, 12, 0.14), rgba(4, 8, 12, 0.86));
+    radial-gradient(circle at 50% 0%, rgba(239, 197, 125, 0.17), transparent 47%),
+    linear-gradient(180deg, rgba(3, 9, 7, 0.12), rgba(3, 9, 7, 0.86));
 }
 
 .hero-inner {
@@ -174,7 +175,10 @@ nav a:hover {
   border: 1px solid var(--line);
   border-radius: 14px;
   padding: 1rem;
-  box-shadow: 0 12px 30px rgba(2, 6, 11, 0.28);
+  backdrop-filter: blur(4px);
+  box-shadow:
+    inset 0 1px 0 rgba(240, 252, 233, 0.06),
+    0 12px 30px rgba(1, 6, 4, 0.4);
 }
 
 .card-head {
@@ -192,8 +196,9 @@ nav a:hover {
   margin: 0 auto;
   border-color: rgba(217, 168, 106, 0.7);
   box-shadow:
-    0 0 0 1px rgba(131, 97, 50, 0.48) inset,
-    0 12px 30px rgba(2, 6, 11, 0.28);
+    0 0 0 1px rgba(160, 125, 62, 0.56) inset,
+    0 0 22px rgba(214, 170, 95, 0.22),
+    0 12px 30px rgba(1, 6, 4, 0.45);
 }
 
 .mvp-card::before {
@@ -203,7 +208,7 @@ nav a:hover {
   top: 0;
   bottom: 0;
   width: 6px;
-  background: linear-gradient(180deg, #f0c485 0%, #c98732 100%);
+  background: linear-gradient(180deg, #efc57d 0%, #b77a2a 100%);
 }
 
 .mvp-single {
@@ -226,7 +231,7 @@ nav a:hover {
   margin: 0 0 0.18rem;
   padding: 0.22rem 0.62rem;
   border-radius: 999px;
-  background: linear-gradient(135deg, #f0c485, #d99850);
+  background: linear-gradient(135deg, #efc57d, #c48f44);
   color: #1a1206;
   font-size: 0.72rem;
   font-weight: 700;
@@ -266,8 +271,8 @@ nav a:hover {
   inset: 0;
   z-index: -1;
   background:
-    linear-gradient(160deg, rgba(5, 10, 17, 0.25), rgba(5, 10, 17, 0.92) 58%),
-    radial-gradient(circle at 20% 18%, rgba(240, 196, 133, 0.22), transparent 56%);
+    linear-gradient(160deg, rgba(5, 15, 11, 0.22), rgba(5, 15, 11, 0.9) 60%),
+    radial-gradient(circle at 20% 18%, rgba(239, 197, 125, 0.2), transparent 54%);
 }
 
 .metric-card h4,
@@ -344,7 +349,7 @@ h4 {
   color: #1a1206;
   border-radius: 10px;
   padding: 0.48rem 0.86rem;
-  background: linear-gradient(135deg, #e9be83, #d99850);
+  background: linear-gradient(135deg, #efc57d, #c68e45);
 }
 
 .table-wrap {
@@ -375,7 +380,7 @@ td {
 }
 
 tbody tr:hover {
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(149, 194, 166, 0.12);
 }
 
 .leaderboard-grid {
@@ -393,7 +398,7 @@ tbody tr:hover {
   padding: 0.14rem 0.45rem;
   font-size: 0.75rem;
   color: var(--muted);
-  background: rgba(20, 31, 44, 0.74);
+  background: rgba(12, 30, 23, 0.78);
 }
 
 .muted {
@@ -422,7 +427,7 @@ tbody tr:hover {
   margin-top: auto;
   color: var(--accent-strong);
   text-decoration: none;
-  border-bottom: 1px solid rgba(240, 196, 133, 0.45);
+  border-bottom: 1px solid rgba(239, 197, 125, 0.5);
   font-size: 0.86rem;
 }
 
